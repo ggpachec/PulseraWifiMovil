@@ -10,14 +10,13 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  final Color purpleBlue = Color.fromARGB(255, 71, 59, 235);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Sensor App',
       theme: ThemeData(
-        primaryColor: purpleBlue,
+        primaryColor: Color(0xFF573AD6),
+        scaffoldBackgroundColor: Colors.white,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MainScreen(),
@@ -26,7 +25,7 @@ class MyApp extends StatelessWidget {
         '/pressure_sensor': (context) => PressureSensorScreen(),
         '/saturation_sensor': (context) => SaturationSensorScreen(),
         '/tracking': (context) => TrackingScreen(),
-        '/config': (context) => ConfigScreen(),
+        '/config': (context) => LimitsConfigScreen(),
       },
     );
   }
@@ -43,46 +42,84 @@ class MainScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/temperature_sensor');
-                  },
-                  child: Text('Sensor de Temperatura'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/pressure_sensor');
-                  },
-                  child: Text('Sensor de Presión'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/saturation_sensor');
-                  },
-                  child: Text('Sensor de Saturación'),
-                ),
-              ],
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/temperature_sensor');
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Color(0xFF573AD6)),
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                textStyle: MaterialStateProperty.all<TextStyle>(
+                    TextStyle(fontWeight: FontWeight.bold)),
+                padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                    EdgeInsets.symmetric(horizontal: 40, vertical: 20)),
+              ),
+              child: Text('Sensor de Temperatura'),
             ),
             SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/tracking');
-                  },
-                  child: Text('Seguimiento'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/config');
-                  },
-                  child: Text('Configuración de Límites'),
-                ),
-              ],
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/pressure_sensor');
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Color(0xFF573AD6)),
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                textStyle: MaterialStateProperty.all<TextStyle>(
+                    TextStyle(fontWeight: FontWeight.bold)),
+                padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                    EdgeInsets.symmetric(horizontal: 40, vertical: 20)),
+              ),
+              child: Text('Sensor de Presión'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/saturation_sensor');
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Color(0xFF573AD6)),
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                textStyle: MaterialStateProperty.all<TextStyle>(
+                    TextStyle(fontWeight: FontWeight.bold)),
+                padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                    EdgeInsets.symmetric(horizontal: 40, vertical: 20)),
+              ),
+              child: Text('Sensor de Saturación'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/tracking');
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Color(0xFF573AD6)),
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                textStyle: MaterialStateProperty.all<TextStyle>(
+                    TextStyle(fontWeight: FontWeight.bold)),
+                padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                    EdgeInsets.symmetric(horizontal: 40, vertical: 20)),
+              ),
+              child: Text('Seguimiento'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/config');
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Color(0xFF573AD6)),
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                textStyle: MaterialStateProperty.all<TextStyle>(
+                    TextStyle(fontWeight: FontWeight.bold)),
+                padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                    EdgeInsets.symmetric(horizontal: 40, vertical: 20)),
+              ),
+              child: Text('Configuración de Límites'),
             ),
           ],
         ),

@@ -8,59 +8,54 @@ class TrackingScreen extends StatefulWidget {
 
 class _TrackingScreenState extends State<TrackingScreen> {
   late GoogleMapController mapController;
-  List<LatLng> points = []; // Lista de puntos para trazar la ruta
-  Set<Polyline> polylines =
-      {}; // Conjunto de polilíneas para mostrar en el mapa
+  Set<Polyline> _polylines = {};
 
-  void startTracking() {
-    // Simulación de inicio de seguimiento
-    // En un uso real, aquí se conectaría al sensor GPS y se registrarían los datos
+  void _onMapCreated(GoogleMapController controller) {
+    setState(() {
+      mapController = controller;
+    });
   }
 
-  void stopTracking() {
-    // Simulación de parada de seguimiento
-    // En un uso real, aquí se detendría la conexión al sensor GPS y el registro de datos
+  void _startTracking() {
+    // Simular inicio de seguimiento
+    // Aquí se agregaría lógica para obtener la ubicación en tiempo real y actualizar el mapa
+  }
+
+  void _stopTracking() {
+    // Simular detención de seguimiento
+    // Aquí se detendría la obtención de ubicación en tiempo real
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Seguimiento'),
+        title: Text('Tracking Screen'),
       ),
-      body: Stack(
+      body: Column(
         children: [
-          GoogleMap(
-            onMapCreated: (controller) {
-              setState(() {
-                mapController = controller;
-              });
-            },
-            polylines: polylines,
-            initialCameraPosition: CameraPosition(
-              target: LatLng(0, 0), // Posición inicial del mapa
-              zoom: 15.0, // Zoom inicial del mapa
+          Expanded(
+            child: GoogleMap(
+              onMapCreated: _onMapCreated,
+              polylines: _polylines,
+              initialCameraPosition: CameraPosition(
+                target: LatLng(0, 0),
+                zoom: 15.0,
+              ),
             ),
           ),
-          Positioned(
-            top: 70,
-            left: 10,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(
-                  'Seguimiento en tiempo real',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: startTracking,
+                  onPressed: _startTracking,
                   child: Text('Comenzar seguimiento'),
                 ),
-                SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: stopTracking,
-                  child: Text('Parar seguimiento'),
+                  onPressed: _stopTracking,
+                  child: Text('Detener seguimiento'),
                 ),
               ],
             ),
