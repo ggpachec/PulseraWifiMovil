@@ -4,6 +4,7 @@ import 'temperature_sensor_screen.dart';
 import 'pressure_sensor_screen.dart';
 import 'saturation_sensor_screen.dart';
 import 'tracking_screen.dart';
+import 'alertas.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Sensor App',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Color(0xFF573AD6),
         scaffoldBackgroundColor: Colors.white,
@@ -26,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/saturation_sensor': (context) => SaturationSensorScreen(),
         '/tracking': (context) => TrackingScreen(),
         '/config': (context) => LimitsConfigScreen(),
+        '/alerts': (context) => AlertsScreen(),
       },
     );
   }
@@ -37,6 +40,12 @@ class MainScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sensor App'),
+        leading: IconButton(
+          icon: Icon(Icons.notifications),
+          onPressed: () {
+            Navigator.pushNamed(context, '/alerts');
+          },
+        ),
       ),
       body: Center(
         child: Column(
