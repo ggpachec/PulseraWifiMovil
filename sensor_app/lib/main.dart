@@ -1,4 +1,32 @@
 import 'package:flutter/material.dart';
+import '../lib_bluetooth.dart';
+
+BluetoothLib objBlueGlobal = BluetoothLib();
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Texto en el Centro'),
+        ),
+        body: Center(
+          child: Text(
+            'Hola, mundo!',
+            style: TextStyle(fontSize: 24),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/*import 'package:flutter/material.dart';
 import 'config_screen.dart';
 import 'temperature_sensor_screen.dart';
 import 'pressure_sensor_screen.dart';
@@ -135,4 +163,4 @@ class MainScreen extends StatelessWidget {
       ),
     );
   }
-}
+}*/
