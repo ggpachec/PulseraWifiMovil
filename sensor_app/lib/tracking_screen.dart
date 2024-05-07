@@ -38,9 +38,10 @@ class _TrackingScreenState extends State<TrackingScreen> {
             child: GoogleMap(
               onMapCreated: _onMapCreated,
               polylines: _polylines,
+              mapType: MapType.hybrid,
               initialCameraPosition: CameraPosition(
-                target: LatLng(0, 0),
-                zoom: 15.0,
+                target: LatLng(-2.1905096678140117, -79.88968926143791),
+                zoom: 13.0,
               ),
             ),
           ),

@@ -130,6 +130,7 @@ class BluetoothLib {
 
     // Buscar el dispositivo deseado en la lista de dispositivos vinculados
     for (BluetoothDevice device in bondedDevices) {
+      print(device);
       if (device.advName == devSerial || device.platformName == devSerial) {
         return device; // Devolver el dispositivo si se encuentra
       }
@@ -145,54 +146,45 @@ class BluetoothLib {
     // Crear un Completer para resolver la futura promesa
     Completer<bool> completer = Completer<bool>();
 
-    BluetoothDevice? pairedDevice = await findPairedDevice(devSerial);
-    if (pairedDevice != null) {
-      print("pairedDevice founded a ${pairedDevice.remoteId}");
-      currentDev = pairedDevice;
-      currentDev_Serial = devSerial;
-      encontrado = true;
-      completer.complete(encontrado);
-    } else {
-      subscription = FlutterBluePlus.scanResults.listen((results) async {
-        for (ScanResult r in results) {
-          print(r.advertisementData);
-          print(r.device);
+    subscription = FlutterBluePlus.scanResults.listen((results) async {
+      for (ScanResult r in results) {
+        //print(r.advertisementData);
+        print(r.device);
 
-          // Comprueba si manufacturerData contiene la clave 0x0C6A esto en decimal es 3178.
-          //Asi llega {3178: [16, 56, 4]}
-          if (r.advertisementData.manufacturerData.containsKey(3178)) {
-            print(
-                '${r.device.platformName} found! - ${r.device.remoteId} rssi: ${r.rssi}');
-            //devSerial = "Nettel Solar";
-            if (r.device.platformName == devSerial ||
-                r.device.advName == devSerial) {
-              print('${devSerial} founded!!!');
-              currentDev = r.device;
-              currentDev_Serial = devSerial;
-              encontrado = true;
+        // Comprueba si manufacturerData contiene la clave 0x0C6A esto en decimal es 3178.
+        //Asi llega {3178: [16, 56, 4]}
+        if (r.advertisementData.manufacturerData.containsKey(3178)) {
+          print(
+              '${r.device.platformName} found! - ${r.device.remoteId} rssi: ${r.rssi}');
+          //devSerial = "Nettel Solar";
+          if (r.device.platformName == devSerial ||
+              r.device.advName == devSerial) {
+            print('${devSerial} founded!!!');
+            currentDev = r.device;
+            currentDev_Serial = devSerial;
+            encontrado = true;
 
-              // Detener la búsqueda después de encontrar el dispositivo
-              subscription.cancel();
-              completer.complete(encontrado);
-              break;
-            }
+            // Detener la búsqueda después de encontrar el dispositivo
+            subscription.cancel();
+            completer.complete(encontrado);
+            break;
           }
         }
-        print('TERMINO FOR SCAN started');
-      });
+      }
+      print('TERMINO FOR SCAN started');
+    });
 
-      print('SCAN started');
-      FlutterBluePlus.startScan();
+    print('SCAN started');
+    FlutterBluePlus.startScan();
 
-      // Establecer un temporizador para devolver false después de 7 segundos si no se ha encontrado el dispositivo
-      Future.delayed(Duration(seconds: 7), () {
-        if (!encontrado) {
-          // No se encontró un dispositivo después de 7 segundos, devolver false
-          subscription.cancel(); // Detener la búsqueda
-          completer.complete(false);
-        }
-      });
-    }
+    // Establecer un temporizador para devolver false después de 7 segundos si no se ha encontrado el dispositivo
+    Future.delayed(Duration(seconds: 7), () {
+      if (!encontrado) {
+        // No se encontró un dispositivo después de 7 segundos, devolver false
+        subscription.cancel(); // Detener la búsqueda
+        completer.complete(false);
+      }
+    });
 
     // Devolver la futura promesa
     print('RETURN DE START SCAN');
