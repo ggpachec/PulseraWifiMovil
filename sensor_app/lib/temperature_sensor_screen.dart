@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'alertas.dart';
 
 class TemperatureSensorScreen extends StatefulWidget {
   @override
@@ -8,63 +8,20 @@ class TemperatureSensorScreen extends StatefulWidget {
 }
 
 class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
-  String sensorData = '';
-  //FlutterBlue flutterBlue = null;
-  BluetoothDevice? selectedDevice;
+  List<Map<String, String>> _data = [];
 
-  void connectToSensor() async {
-    try {
-      /*var scanSubscription = flutterBlue.scanResults.listen((results) {
-        for (ScanResult r in results) {
-          if (r.device.name == 'NombreDeTuDispositivo') {
-            selectedDevice = r.device;
-            break;
-          }
-        }
-      });
-
-      flutterBlue.startScan();
-      await Future.delayed(Duration(seconds: 4));
-      await flutterBlue.stopScan();
-      scanSubscription.cancel();*/
-
-      if (selectedDevice != null) {
-        await selectedDevice!.connect();
-        List<BluetoothService> services =
-            await selectedDevice!.discoverServices();
-        for (BluetoothService service in services) {
-          if (service.uuid.toString() ==
-              '0000180f-0000-1000-8000-00805f9b34fb') {
-            List<BluetoothCharacteristic> characteristics =
-                service.characteristics;
-            for (BluetoothCharacteristic characteristic in characteristics) {
-              if (characteristic.uuid.toString() ==
-                  '00002a6e-0000-1000-8000-00805f9b34fb') {
-                await characteristic.setNotifyValue(true);
-                characteristic.value.listen((value) {
-                  setState(() {
-                    sensorData = value.toString();
-                  });
-                });
-              }
-            }
-          }
-        }
-      } else {
-        setState(() {
-          sensorData = 'Dispositivo no encontrado';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        sensorData = 'Error: $e';
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    _simulateData();
   }
 
-  void clearData() {
-    setState(() {
-      sensorData = '';
+  void _simulateData() {
+    Future.delayed(Duration(seconds: 1), () {
+      setState(() {
+        _data.add({'value': '25.12 C', 'time': '14:03 h'});
+      });
+      _simulateData();
     });
   }
 
@@ -73,34 +30,93 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sensor de Temperatura'),
-      ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(20),
-            alignment: Alignment.center,
-            child: Text(
-              'Sensor de Temperatura',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        actions: [
+          IconButton(
+            icon: Stack(
+              children: [
+                Icon(Icons.notifications),
+                Positioned(
+                  right: 0,
+                  child: Container(
+                    padding: EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: 12,
+                      minHeight: 12,
+                    ),
+                    child: Text(
+                      '1',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 8,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-          ElevatedButton(
-            onPressed: connectToSensor,
-            child: Text('Conectar'),
-          ),
-          ElevatedButton(
-            onPressed: clearData,
-            child: Text('Limpiar'),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                padding: EdgeInsets.all(20),
-                child: Text(sensorData),
-              ),
-            ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/alerts');
+            },
           ),
         ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Actualizar Estado'),
+                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Cerrar Conexión'),
+                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Container(
+              padding: EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.teal,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                'Estado Bluetooth: State_ON',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            SizedBox(height: 10),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ListView.builder(
+                  itemCount: _data.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Icon(Icons.brightness_1, color: Colors.teal),
+                      title: Text(_data[index]['value']!),
+                      trailing: Text(_data[index]['time']!),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
