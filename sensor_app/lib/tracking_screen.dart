@@ -1,67 +1,116 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'alertas.dart';
 
-class TrackingScreen extends StatefulWidget {
+class TrackingSensorScreen extends StatefulWidget {
   @override
-  _TrackingScreenState createState() => _TrackingScreenState();
+  _TrackingSensorScreenState createState() => _TrackingSensorScreenState();
 }
 
-class _TrackingScreenState extends State<TrackingScreen> {
+class _TrackingSensorScreenState extends State<TrackingSensorScreen> {
   late GoogleMapController mapController;
+  Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
+  List<LatLng> _route = [];
+
+  final LatLng _center = const LatLng(40.416775, -3.703790);
 
   void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
+  void _addMarker(LatLng position) {
     setState(() {
-      mapController = controller;
+      final marker = Marker(
+        markerId: MarkerId(position.toString()),
+        position: position,
+      );
+      _markers.add(marker);
+      _route.add(position);
+
+      _polylines.add(Polyline(
+        polylineId: PolylineId('route'),
+        points: _route,
+        color: Colors.blue,
+        width: 5,
+      ));
     });
-  }
-
-  void _startTracking() {
-    // Simular inicio de seguimiento
-    // Aquí se agregaría lógica para obtener la ubicación en tiempo real y actualizar el mapa
-  }
-
-  void _stopTracking() {
-    // Simular detención de seguimiento
-    // Aquí se detendría la obtención de ubicación en tiempo real
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tracking Screen'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: GoogleMap(
-              onMapCreated: _onMapCreated,
-              polylines: _polylines,
-              mapType: MapType.hybrid,
-              initialCameraPosition: CameraPosition(
-                target: LatLng(-2.1905096678140117, -79.88968926143791),
-                zoom: 13.0,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+        title: Text('Sensor de Seguimiento'),
+        actions: [
+          IconButton(
+            icon: Stack(
               children: [
-                ElevatedButton(
-                  onPressed: _startTracking,
-                  child: Text('Comenzar seguimiento'),
-                ),
-                ElevatedButton(
-                  onPressed: _stopTracking,
-                  child: Text('Detener seguimiento'),
+                Icon(Icons.notifications),
+                Positioned(
+                  right: 0,
+                  child: Container(
+                    padding: EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: 12,
+                      minHeight: 12,
+                    ),
+                    child: Text(
+                      '1',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 8,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ],
             ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/alerts');
+            },
           ),
         ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Actualizar Estado'),
+                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Cerrar Conexión'),
+                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Expanded(
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(
+                  target: _center,
+                  zoom: 12.0,
+                ),
+                markers: _markers,
+                polylines: _polylines,
+                onTap: _addMarker,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

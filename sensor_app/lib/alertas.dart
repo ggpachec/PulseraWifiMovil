@@ -1,53 +1,117 @@
 import 'package:flutter/material.dart';
 
-class AlertsScreen extends StatelessWidget {
+class AlertsScreen extends StatefulWidget {
+  @override
+  _AlertsScreenState createState() => _AlertsScreenState();
+}
+
+class _AlertsScreenState extends State<AlertsScreen> {
+  String _selectedFilter = 'Todos';
+  final List<Map<String, String>> _alerts = [
+    {
+      'type': 'Emergencia Extrema',
+      'description': 'Presión arterial alta: 160 mmHg',
+      'color': '0xffFFCDD2'
+    },
+    {
+      'type': 'Emergencia Moderada',
+      'description': 'Temperatura corporal baja:',
+      'color': '0xffC8E6C9'
+    },
+    {
+      'type': 'Recordatorio',
+      'description': 'Saturación de oxígeno alta: 98%',
+      'color': '0xffFFECB3'
+    },
+    {
+      'type': 'Emergencia Extrema',
+      'description': 'Presión arterial alta: 160 mmHg',
+      'color': '0xffFFCDD2'
+    },
+    {
+      'type': 'Emergencia Moderada',
+      'description': 'Temperatura corporal baja:',
+      'color': '0xffC8E6C9'
+    },
+    {
+      'type': 'Recordatorio',
+      'description': 'Saturación de oxígeno alta: 98%',
+      'color': '0xffFFECB3'
+    },
+  ];
+
+  List<Map<String, String>> get _filteredAlerts {
+    if (_selectedFilter == 'Todos') {
+      return _alerts;
+    }
+    return _alerts.where((alert) => alert['type'] == _selectedFilter).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Icon(Icons.notifications),
         title: Text('Alertas y Notificaciones'),
+        backgroundColor: Colors.teal,
       ),
-      body: ListView(
-        children: <Widget>[
-          _buildAlert('Emergencia Extrema', 'Presión arterial alta: 160 mmHg'),
-          _buildAlert('Emergencia Moderada', 'Temperatura corporal baja: 34°C'),
-          _buildAlert('Recordatorio', 'Saturación de oxígeno alta: 98%'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAlert(String tipo, String mensaje) {
-    Color color;
-    if (tipo == 'Emergencia Extrema') {
-      color = Colors.red;
-    } else if (tipo == 'Emergencia Moderada') {
-      color = Colors.amber;
-    } else {
-      color = Colors.green;
-    }
-
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      color: color.withOpacity(0.3),
-      child: Row(
-        children: <Widget>[
-          Icon(Icons.warning, color: color),
-          SizedBox(width: 16.0),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                tipo,
-                style: TextStyle(color: color, fontWeight: FontWeight.bold),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            DropdownButton<String>(
+              value: _selectedFilter,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedFilter = newValue!;
+                });
+              },
+              items: <String>[
+                'Todos',
+                'Emergencia Extrema',
+                'Emergencia Moderada',
+                'Recordatorio'
+              ].map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _filteredAlerts.length,
+                itemBuilder: (context, index) {
+                  final alert = _filteredAlerts[index];
+                  return Card(
+                    color: Color(int.parse(alert['color']!)),
+                    child: ListTile(
+                      leading: Icon(
+                        alert['type'] == 'Emergencia Extrema'
+                            ? Icons.warning
+                            : alert['type'] == 'Emergencia Moderada'
+                                ? Icons.error_outline
+                                : Icons.notifications,
+                        color: Colors.black,
+                      ),
+                      title: Text(alert['type']!),
+                      subtitle: Text(alert['description']!),
+                    ),
+                  );
+                },
               ),
-              Text(
-                mensaje,
-                style: TextStyle(color: color),
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.teal),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
