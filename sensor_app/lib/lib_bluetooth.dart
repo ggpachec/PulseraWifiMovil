@@ -156,7 +156,6 @@ class BluetoothLib {
         if (r.advertisementData.manufacturerData.containsKey(3178)) {
           print(
               '${r.device.platformName} found! - ${r.device.remoteId} rssi: ${r.rssi}');
-          //devSerial = "Nettel Solar";
           if (r.device.platformName == devSerial ||
               r.device.advName == devSerial) {
             print('${devSerial} founded!!!');
