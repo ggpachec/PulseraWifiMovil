@@ -6,99 +6,125 @@ class LimitsConfigScreen extends StatefulWidget {
 }
 
 class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
-  double weight = 70.0; // Peso inicial
-  double height = 170.0; // Estatura inicial
-  double age = 30.0; // Edad inicial
-
   double minPressure = 60.0;
-  double maxPressure = 130.0;
-
-  double minTemperature = 35.0;
-  double maxTemperature = 38.0;
+  double maxPressure = 120.0;
+  RangeValues pressureRange = RangeValues(60, 90);
 
   double minSaturation = 90.0;
   double maxSaturation = 100.0;
-
-  double pressureValue = 100.0;
-  double temperatureValue = 36.5;
   double saturationValue = 95.0;
+
+  double minTemperature = 35.0;
+  double maxTemperature = 40.0;
+  double temperatureValue = 37.0;
+
+  double minHeartRate = 60.0;
+  double maxHeartRate = 120.0;
+  double heartRateValue = 80.0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Configuración de límites de signos vitales'),
+        title: Text('Configuración de límites'),
+        backgroundColor: Colors.teal,
+        actions: [
+          IconButton(
+            icon: Stack(
+              children: [
+                Icon(Icons.notifications),
+                Positioned(
+                  right: 0,
+                  child: Container(
+                    padding: EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: 12,
+                      minHeight: 12,
+                    ),
+                    child: Text(
+                      '1',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 8,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/alerts');
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            _buildSlider(
-              'Peso',
-              weight,
-              40.0,
-              120.0,
-              (value) {
-                setState(() {
-                  weight = value;
-                });
-              },
-            ),
-            _buildSlider(
-              'Estatura',
-              height,
-              120.0,
-              220.0,
-              (value) {
-                setState(() {
-                  height = value;
-                });
-              },
-            ),
-            _buildSlider(
-              'Edad',
-              age,
-              1.0,
-              120.0,
-              (value) {
-                setState(() {
-                  age = value;
-                });
-              },
-            ),
-            _buildSignLimit(
-              'Presión arterial',
+            _buildTitle('Presión Arterial', 'Rangos mínimos', 'Rangos máximos'),
+            _buildRangeSlider(
+              'Presión Arterial',
+              pressureRange,
               minPressure,
               maxPressure,
-              pressureValue,
-              (value) {
+              (RangeValues newRange) {
                 setState(() {
-                  pressureValue = value;
+                  pressureRange = newRange;
                 });
               },
             ),
-            _buildSignLimit(
-              'Temperatura corporal',
-              minTemperature,
-              maxTemperature,
-              temperatureValue,
-              (value) {
-                setState(() {
-                  temperatureValue = value;
-                });
-              },
-            ),
-            _buildSignLimit(
-              'Saturación de oxígeno',
+            _buildTitle('Saturación de Oxígeno'),
+            _buildSlider(
+              saturationValue,
               minSaturation,
               maxSaturation,
-              saturationValue,
-              (value) {
+              (newValue) {
                 setState(() {
-                  saturationValue = value;
+                  saturationValue = newValue;
                 });
               },
+            ),
+            _buildTitle('Temperatura Corporal'),
+            _buildSlider(
+              temperatureValue,
+              minTemperature,
+              maxTemperature,
+              (newValue) {
+                setState(() {
+                  temperatureValue = newValue;
+                });
+              },
+            ),
+            _buildTitle('Frecuencia Cardíaca'),
+            _buildSlider(
+              heartRateValue,
+              minHeartRate,
+              maxHeartRate,
+              (newValue) {
+                setState(() {
+                  heartRateValue = newValue;
+                });
+              },
+            ),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {},
+                child: Text('GUARDAR'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.teal,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                ),
+              ),
             ),
           ],
         ),
@@ -106,8 +132,68 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
     );
   }
 
-  Widget _buildSlider(
+  Widget _buildTitle(String title, [String? minLabel, String? maxLabel]) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              title,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(width: 8),
+            Icon(Icons.info_outline, color: Colors.grey),
+          ],
+        ),
+        if (minLabel != null && maxLabel != null) ...[
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(minLabel, style: TextStyle(fontSize: 16)),
+              Text(maxLabel, style: TextStyle(fontSize: 16)),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildRangeSlider(
     String label,
+    RangeValues values,
+    double min,
+    double max,
+    ValueChanged<RangeValues> onChanged,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RangeSlider(
+          values: values,
+          min: min,
+          max: max,
+          divisions: (max - min).toInt(),
+          labels: RangeLabels(
+            values.start.round().toString(),
+            values.end.round().toString(),
+          ),
+          onChanged: onChanged,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('${values.start.round()}', style: TextStyle(fontSize: 16)),
+            Text('${values.end.round()}', style: TextStyle(fontSize: 16)),
+          ],
+        ),
+        SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _buildSlider(
     double value,
     double min,
     double max,
@@ -115,106 +201,25 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          '$label (${value.toStringAsFixed(1)})',
-          style: TextStyle(fontSize: 18),
-        ),
+      children: [
         Slider(
           value: value,
           min: min,
           max: max,
           divisions: (max - min).toInt(),
+          label: value.round().toString(),
           onChanged: onChanged,
         ),
-        SizedBox(height: 10),
-      ],
-    );
-  }
-
-  Widget _buildSignLimit(
-    String label,
-    double minLimit,
-    double maxLimit,
-    double value,
-    ValueChanged<double> onChanged,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          '$label:',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-        Container(
-          height: 30,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: Colors.grey[300],
-          ),
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                left: _calculatePosition(minLimit, maxLimit, minLimit),
-                child: Container(
-                  width: 5,
-                  height: 30,
-                  color: Colors.red,
-                ),
-              ),
-              Positioned(
-                left: _calculatePosition(minLimit, maxLimit, value),
-                child: GestureDetector(
-                  onHorizontalDragUpdate: (details) {
-                    double newValue = _calculateValue(
-                      minLimit,
-                      maxLimit,
-                      details.localPosition.dx,
-                      context,
-                    );
-                    onChanged(newValue);
-                  },
-                  child: Container(
-                    width: 20,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.blue,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: _calculatePosition(minLimit, maxLimit, maxLimit),
-                child: Container(
-                  width: 5,
-                  height: 30,
-                  color: Colors.red,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 10),
-        Text(
-          'Mínimo: ${minLimit.toStringAsFixed(1)} - Máximo: ${maxLimit.toStringAsFixed(1)}',
-          style: TextStyle(fontSize: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('${min.round()}', style: TextStyle(fontSize: 16)),
+            Text('${value.round()}', style: TextStyle(fontSize: 16)),
+            Text('${max.round()}', style: TextStyle(fontSize: 16)),
+          ],
         ),
         SizedBox(height: 20),
       ],
     );
-  }
-
-  double _calculatePosition(double min, double max, double value) {
-    return (value - min) / (max - min) * MediaQuery.of(context).size.width - 10;
-  }
-
-  double _calculateValue(
-      double min, double max, double positionX, BuildContext context) {
-    double position = positionX + 10;
-    double width = MediaQuery.of(context).size.width;
-    double value = (position / width) * (max - min) + min;
-    return value.clamp(min, max);
   }
 }
