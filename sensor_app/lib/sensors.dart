@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class SensorsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +62,7 @@ class HomeScreen extends StatelessWidget {
               context,
               'Sensor de Saturación',
               Icons.opacity,
-              '/oxygen',
+              '/saturation',
             ),
             _buildSensorButton(
               context,
@@ -74,7 +74,7 @@ class HomeScreen extends StatelessWidget {
               context,
               'Configuración de límites',
               Icons.settings,
-              '/limits',
+              '/config',
               color: Colors.teal,
             ),
           ],
@@ -96,7 +96,7 @@ class HomeScreen extends StatelessWidget {
         icon: Icon(icon, size: 32),
         label: Text(title, style: TextStyle(fontSize: 18)),
         style: ElevatedButton.styleFrom(
-          backgroundColor: color,
+          primary: color,
           padding: EdgeInsets.symmetric(vertical: 20),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),

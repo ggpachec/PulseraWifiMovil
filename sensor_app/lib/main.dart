@@ -1,4 +1,42 @@
-import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'logIn.dart';
+import 'createAccount.dart';
+import 'forgotPassword.dart';
+import 'sensors.dart';
+import 'temperature_sensor_screen.dart';
+import 'pressure_sensor_screen.dart';
+import 'saturation_sensor_screen.dart';
+import 'tracking_screen.dart';
+import 'alertas.dart';
+import 'config_screen.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginScreen(),
+        '/createAccount': (context) => CreateAccountScreen(),
+        '/forgotPassword': (context) => ForgotPasswordScreen(),
+        '/sensors': (context) => SensorsScreen(),
+        '/temperature': (context) => TemperatureSensorScreen(),
+        '/pressure': (context) => PressureSensorScreen(),
+        '/saturation': (context) => SaturationSensorScreen(),
+        '/tracking': (context) => TrackingSensorScreen(),
+        '/alerts': (context) => AlertsScreen(),
+        '/config': (context) => LimitsConfigScreen(),
+      },
+    );
+  }
+}
+
+
+/*import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
@@ -148,7 +186,9 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     _connection?.dispose(); // Asegura que la conexión se cierre correctamente
     super.dispose();
   }
-}
+}*/
+
+
 
 /*import 'package:flutter/material.dart';
 import '../lib_bluetooth.dart';

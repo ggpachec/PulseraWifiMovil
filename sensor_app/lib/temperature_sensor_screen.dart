@@ -1,5 +1,7 @@
+import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'alertas.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 class TemperatureSensorScreen extends StatefulWidget {
   @override
@@ -8,21 +10,100 @@ class TemperatureSensorScreen extends StatefulWidget {
 }
 
 class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
-  List<Map<String, String>> _data = [];
+  BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
+  FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
+  List<String> _dataList = [];
+  List<BluetoothDevice> _devicesList = [];
+  BluetoothConnection? _connection;
 
   @override
   void initState() {
     super.initState();
-    _simulateData();
+    _getBluetoothState();
   }
 
-  void _simulateData() {
-    Future.delayed(Duration(seconds: 1), () {
+  void _getBluetoothState() {
+    _bluetooth.state.then((state) {
       setState(() {
-        _data.add({'value': '25.12 C', 'time': '14:03 h'});
+        _bluetoothState = state;
       });
-      _simulateData();
     });
+  }
+
+  void _startDiscovery() {
+    _bluetooth.startDiscovery().listen((r) {
+      setState(() {
+        if (!_devicesList.contains(r.device)) {
+          _devicesList.add(r.device);
+        }
+      });
+      _showDevicesDialog();
+    });
+  }
+
+  void _connectToDevice(BluetoothDevice device) async {
+    try {
+      _connection = await BluetoothConnection.toAddress(device.address);
+      print('Conectado al dispositivo ${device.name}');
+      setState(() {
+        _bluetoothState = BluetoothState.STATE_ON;
+      });
+
+      _connection!.input?.listen((Uint8List data) {
+        final receivedData = String.fromCharCodes(data);
+        print('Data recibida: $receivedData');
+        setState(() {
+          _dataList.add(receivedData);
+        });
+      });
+    } catch (e) {
+      print('Error al conectar: $e');
+    }
+  }
+
+  void _closeConnection() async {
+    _connection?.close();
+    _connection?.dispose();
+
+    setState(() {
+      _dataList.clear();
+      _bluetoothState = BluetoothState.UNKNOWN;
+    });
+  }
+
+  void _showDevicesDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Dispositivos encontrados...'),
+          content: Container(
+            width: double.minPositive,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _devicesList.length,
+              itemBuilder: (context, index) {
+                BluetoothDevice device = _devicesList[index];
+                return ListTile(
+                  title: Text(device.name ?? 'Unknown device'),
+                  subtitle: Text(device.address.toString()),
+                  onTap: () {
+                    _connectToDevice(device);
+                    Navigator.of(context).pop();
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _connection?.dispose();
+    super.dispose();
   }
 
   @override
@@ -30,6 +111,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sensor de Temperatura'),
+        backgroundColor: Colors.teal,
         actions: [
           IconButton(
             icon: Stack(
@@ -73,16 +155,22 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _getBluetoothState,
                   child: Text('Actualizar Estado'),
                   style: ElevatedButton.styleFrom(primary: Colors.red),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _closeConnection,
                   child: Text('Cerrar Conexión'),
                   style: ElevatedButton.styleFrom(primary: Colors.red),
                 ),
               ],
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _startDiscovery,
+              child: Text('Conectar Dispositivo'),
+              style: ElevatedButton.styleFrom(primary: Colors.blue),
             ),
             SizedBox(height: 10),
             Container(
@@ -92,7 +180,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                'Estado Bluetooth: State_ON',
+                'Estado Bluetooth: ${_bluetoothState == BluetoothState.STATE_ON ? "Conectado" : "Desconectado"}',
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -104,15 +192,26 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListView.builder(
-                  itemCount: _data.length,
+                  itemCount: _dataList.length,
                   itemBuilder: (context, index) {
                     return ListTile(
                       leading: Icon(Icons.brightness_1, color: Colors.teal),
-                      title: Text(_data[index]['value']!),
-                      trailing: Text(_data[index]['time']!),
+                      title: Text(_dataList[index]),
+                      trailing: Text(
+                        "${DateTime.now().hour}:${DateTime.now().minute} h",
+                      ),
                     );
                   },
                 ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.teal),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/sensors');
+                },
               ),
             ),
           ],
