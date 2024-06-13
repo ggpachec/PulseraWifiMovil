@@ -9,11 +9,19 @@ class SensorsScreen extends StatelessWidget {
         backgroundColor: Colors.teal,
         actions: [
           IconButton(
+            icon: Icon(Icons.settings, size: 28),
+            onPressed: () {
+              Navigator.pushNamed(context, '/config');
+            },
+          ),
+          SizedBox(width: 16),
+          IconButton(
             icon: Stack(
               children: [
-                Icon(Icons.notifications),
+                Icon(Icons.notifications, size: 28),
                 Positioned(
-                  right: 0,
+                  right: 1,
+                  top: 1,
                   child: Container(
                     padding: EdgeInsets.all(1),
                     decoration: BoxDecoration(
@@ -40,44 +48,48 @@ class SensorsScreen extends StatelessWidget {
               Navigator.pushNamed(context, '/alerts');
             },
           ),
+          SizedBox(width: 16),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildSensorButton(
-              context,
-              'Sensor de Temperatura',
-              Icons.thermostat,
-              '/temperature',
-            ),
-            _buildSensorButton(
-              context,
-              'Sensor de Presión',
-              Icons.favorite,
-              '/pressure',
-            ),
-            _buildSensorButton(
-              context,
-              'Sensor de Saturación',
-              Icons.opacity,
-              '/saturation',
-            ),
-            _buildSensorButton(
-              context,
-              'Sensor de Seguimiento',
-              Icons.location_on,
-              '/tracking',
-            ),
-            _buildSensorButton(
-              context,
-              'Configuración de límites',
-              Icons.settings,
-              '/config',
-              color: Colors.teal,
-            ),
-          ],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildSensorButton(
+                context,
+                'Sensor de Temperatura',
+                Icons.thermostat,
+                '/temperature',
+              ),
+              _buildSensorButton(
+                context,
+                'Sensor de Presión',
+                Icons.favorite,
+                '/pressure',
+              ),
+              _buildSensorButton(
+                context,
+                'Sensor de Saturación',
+                Icons.opacity,
+                '/saturation',
+              ),
+              _buildSensorButton(
+                context,
+                'Sensor de Seguimiento',
+                Icons.location_on,
+                '/tracking',
+              ),
+              _buildSensorButton(
+                context,
+                'Configuración de límites',
+                Icons.settings,
+                '/config',
+                color: Colors.teal,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -97,10 +109,11 @@ class SensorsScreen extends StatelessWidget {
         label: Text(title, style: TextStyle(fontSize: 18)),
         style: ElevatedButton.styleFrom(
           primary: color,
-          padding: EdgeInsets.symmetric(vertical: 20),
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
+          elevation: 5, // Agregar sombra
         ),
         onPressed: () {
           Navigator.pushNamed(context, route);

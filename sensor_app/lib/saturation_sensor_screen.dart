@@ -204,15 +204,6 @@ class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
                 ),
               ),
             ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.teal),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/sensors');
-                },
-              ),
-            ),
           ],
         ),
       ),
