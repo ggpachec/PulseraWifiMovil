@@ -24,6 +24,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   void _resetPassword() {
     if (_formKey.currentState?.validate() ?? false) {
       // Procesar la recuperación de contraseña
+      // Aquí puedes añadir la lógica para enviar la solicitud de recuperación de contraseña
+
+      // Mostrar un diálogo de éxito y redirigir al inicio de sesión
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Solicitud enviada'),
+            content: Text(
+                'Por favor, revisa tu correo electrónico para restablecer tu contraseña.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/login');
+                },
+                child: Text('Aceptar'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 

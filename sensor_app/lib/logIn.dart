@@ -1,19 +1,4 @@
 import 'package:flutter/material.dart';
-import 'createAccount.dart';
-import 'forgotPassword.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: LoginScreen(),
-    );
-  }
-}
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -62,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() {
     if (_formKey.currentState?.validate() ?? false) {
       // Procesar el inicio de sesión
+      Navigator.pushReplacementNamed(context, '/sensors');
     }
   }
 
@@ -138,21 +124,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ForgotPasswordScreen()),
-                    );
+                    Navigator.pushNamed(context, '/forgotPassword');
                   },
                   child: Text('¿Olvidaste tu contraseña?',
                       style: TextStyle(color: Colors.teal)),
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => RegisterScreen()),
-                    );
+                    Navigator.pushNamed(context, '/createAccount');
                   },
                   child: Text('¿No tienes una cuenta?',
                       style: TextStyle(color: Colors.redAccent)),

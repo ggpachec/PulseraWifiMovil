@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class RegisterScreen extends StatefulWidget {
+class CreateAccountScreen extends StatefulWidget {
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _CreateAccountScreenState createState() => _CreateAccountScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -55,6 +55,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _register() {
     if (_formKey.currentState?.validate() ?? false) {
       // Procesar el registro
+      Navigator.pushReplacementNamed(context, '/login');
     }
   }
 
