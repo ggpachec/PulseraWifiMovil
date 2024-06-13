@@ -11,7 +11,7 @@ class SensorsScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.settings, size: 28),
             onPressed: () {
-              Navigator.pushNamed(context, '/config');
+              Navigator.pushNamed(context, '/generalSettings');
             },
           ),
           SizedBox(width: 16),
