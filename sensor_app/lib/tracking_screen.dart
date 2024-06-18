@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 class TrackingScreen extends StatefulWidget {
   @override
@@ -9,7 +9,6 @@ class TrackingScreen extends StatefulWidget {
 
 class _TrackingScreenState extends State<TrackingScreen> {
   late GoogleMapController _mapController;
-  final Location _location = Location();
   late LatLng _currentPosition;
   final Set<Polyline> _polylines = {};
   final List<LatLng> _routeCoords = [];
@@ -22,29 +21,50 @@ class _TrackingScreenState extends State<TrackingScreen> {
   }
 
   Future<void> _initLocation() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    bool serviceEnabled;
+    LocationPermission permission;
 
-    _serviceEnabled = await _location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await _location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings();
+      return Future.error('Location services are disabled.');
     }
 
-    _permissionGranted = await _location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return;
+    // Check for location permissions
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
       }
     }
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
 
-    _location.onLocationChanged.listen((LocationData currentLocation) {
+    // Get current location
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _currentPosition = LatLng(position.latitude, position.longitude);
+      _routeCoords.add(_currentPosition);
+      _polylines.add(Polyline(
+        polylineId: PolylineId('route'),
+        visible: true,
+        points: _routeCoords,
+        width: 4,
+        color: Colors.blue,
+      ));
+    });
+
+    Geolocator.getPositionStream(
+            locationSettings: LocationSettings(
+                accuracy: LocationAccuracy.high, distanceFilter: 10))
+        .listen((Position position) {
       setState(() {
-        _currentPosition =
-            LatLng(currentLocation.latitude!, currentLocation.longitude!);
+        _currentPosition = LatLng(position.latitude, position.longitude);
         _routeCoords.add(_currentPosition);
         _polylines.add(Polyline(
           polylineId: PolylineId('route'),
@@ -55,13 +75,6 @@ class _TrackingScreenState extends State<TrackingScreen> {
         ));
       });
       _mapController.animateCamera(CameraUpdate.newLatLng(_currentPosition));
-    });
-
-    LocationData locationData = await _location.getLocation();
-    setState(() {
-      _currentPosition =
-          LatLng(locationData.latitude!, locationData.longitude!);
-      _routeCoords.add(_currentPosition);
     });
   }
 
