@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         '/temperature': (context) => TemperatureSensorScreen(),
         '/pressure': (context) => PressureSensorScreen(),
         '/saturation': (context) => SaturationSensorScreen(),
-        '/tracking': (context) => TrackingSensorScreen(),
+        '/tracking': (context) => TrackingScreen(),
         '/alerts': (context) => AlertsScreen(),
         '/config': (context) => LimitsConfigScreen(),
         '/generalSettings': (context) => GeneralSettingsScreen(),
