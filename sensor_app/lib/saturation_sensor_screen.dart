@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'bluetooth_service.dart';
 
 class SaturationSensorScreen extends StatefulWidget {
   @override
@@ -9,100 +10,49 @@ class SaturationSensorScreen extends StatefulWidget {
 }
 
 class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
-  BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
-  FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
+  final BluetoothService _bluetoothService = BluetoothService();
   List<String> _dataList = [];
-  List<BluetoothDevice> _devicesList = [];
-  BluetoothConnection? _connection;
 
   @override
   void initState() {
     super.initState();
-    _getBluetoothState();
+    _bluetoothService.init();
   }
 
-  void _getBluetoothState() {
-    _bluetooth.state.then((state) {
-      setState(() {
-        _bluetoothState = state;
-      });
-    });
-  }
-
-  void _startDiscovery() {
-    _bluetooth.startDiscovery().listen((r) {
-      setState(() {
-        if (!_devicesList.contains(r.device)) {
-          _devicesList.add(r.device);
-        }
-      });
-      _showDevicesDialog();
-    });
-  }
-
-  void _connectToDevice(BluetoothDevice device) async {
-    try {
-      _connection = await BluetoothConnection.toAddress(device.address);
-      print('Conectado al dispositivo ${device.name}');
-      setState(() {
-        _bluetoothState = BluetoothState.STATE_ON;
-      });
-
-      _connection!.input?.listen((Uint8List data) {
-        final receivedData = String.fromCharCodes(data);
-        print('Data recibida: $receivedData');
-        setState(() {
-          _dataList.add(receivedData);
-        });
-      });
-    } catch (e) {
-      print('Error al conectar: $e');
-    }
-  }
-
-  void _closeConnection() async {
-    _connection?.close();
-    _connection?.dispose();
-
-    setState(() {
-      _dataList.clear();
-      _bluetoothState = BluetoothState.UNKNOWN;
-    });
-  }
-
-  void _showDevicesDialog() {
-    showDialog(
+  void _showDeviceDialog() async {
+    await showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text('Dispositivos encontrados...'),
           content: Container(
-            width: double.minPositive,
+            width: double.maxFinite,
             child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: _devicesList.length,
+              itemCount: _bluetoothService.devicesList.length,
               itemBuilder: (context, index) {
-                BluetoothDevice device = _devicesList[index];
+                BluetoothDevice device = _bluetoothService.devicesList[index];
                 return ListTile(
                   title: Text(device.name ?? 'Unknown device'),
                   subtitle: Text(device.address.toString()),
-                  onTap: () {
-                    _connectToDevice(device);
+                  onTap: () async {
+                    await _bluetoothService.connectToDevice(device);
                     Navigator.of(context).pop();
                   },
                 );
               },
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancelar'),
+            ),
+          ],
         );
       },
     );
-  }
-
-  @override
-  void dispose() {
-    _connection?.dispose();
-    super.dispose();
   }
 
   @override
@@ -144,6 +94,12 @@ class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
               Navigator.pushNamed(context, '/alerts');
             },
           ),
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.pushNamed(context, '/generalSettings');
+            },
+          ),
         ],
       ),
       body: Padding(
@@ -154,12 +110,12 @@ class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: _getBluetoothState,
+                  onPressed: _bluetoothService.init,
                   child: Text('Actualizar Estado'),
                   style: ElevatedButton.styleFrom(primary: Colors.red),
                 ),
                 ElevatedButton(
-                  onPressed: _closeConnection,
+                  onPressed: _bluetoothService.closeConnection,
                   child: Text('Cerrar Conexión'),
                   style: ElevatedButton.styleFrom(primary: Colors.red),
                 ),
@@ -167,7 +123,7 @@ class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
             ),
             SizedBox(height: 10),
             ElevatedButton(
-              onPressed: _startDiscovery,
+              onPressed: _showDeviceDialog,
               child: Text('Conectar Dispositivo'),
               style: ElevatedButton.styleFrom(primary: Colors.blue),
             ),
@@ -179,7 +135,7 @@ class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                'Estado Bluetooth: ${_bluetoothState == BluetoothState.STATE_ON ? "Conectado" : "Desconectado"}',
+                'Estado Bluetooth: ${_bluetoothService.bluetoothState == BluetoothState.STATE_ON ? "Conectado" : "Desconectado"}',
                 style: TextStyle(color: Colors.white),
               ),
             ),
