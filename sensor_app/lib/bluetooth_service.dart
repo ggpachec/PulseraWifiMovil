@@ -13,13 +13,37 @@ class BluetoothService {
   List<BluetoothDevice> get devicesList => _devicesList;
   TextEditingController get textController => _textController;
 
-  Future<void> init() async {
-    _getBluetoothState();
+  Future<void> init(BuildContext context) async {
+    await _getBluetoothState(context);
     _startDiscovery();
   }
 
-  Future<void> _getBluetoothState() async {
+  Future<void> _getBluetoothState(BuildContext context) async {
     _bluetoothState = await _bluetooth.state;
+    if (_bluetoothState != BluetoothState.STATE_ON) {
+      _showBluetoothDialog(context);
+    }
+  }
+
+  void _showBluetoothDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Bluetooth no está encendido'),
+          content: Text('Por favor, encienda el Bluetooth para continuar.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _bluetooth.requestEnable();
+              },
+              child: Text('Encender Bluetooth'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _startDiscovery() {
@@ -49,5 +73,46 @@ class BluetoothService {
     await _connection?.close();
     _connection?.dispose();
     _textController.text = "";
+  }
+
+  Future<void> showDevicesDialog(
+      BuildContext context, Function(BluetoothDevice) onDeviceSelected) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Dispositivos encontrados...'),
+          content: Container(
+            width: double.minPositive,
+            child: LimitedBox(
+              maxHeight: 200,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _devicesList.length,
+                itemBuilder: (context, index) {
+                  BluetoothDevice device = _devicesList[index];
+                  return ListTile(
+                    title: Text(device.name ?? 'Unknown device'),
+                    subtitle: Text(device.address.toString()),
+                    onTap: () {
+                      onDeviceSelected(device);
+                      Navigator.of(context).pop();
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

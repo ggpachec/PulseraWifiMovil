@@ -17,43 +17,25 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
   @override
   void initState() {
     super.initState();
-    _bluetoothService.init();
+    _initializeBluetooth();
+  }
+
+  Future<void> _initializeBluetooth() async {
+    await _bluetoothService.init(context);
+    _bluetoothService.textController.addListener(() {
+      setState(() {
+        _dataList = _bluetoothService.textController.text.split('\n');
+      });
+    });
   }
 
   void _showDeviceDialog() async {
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Dispositivos encontrados...'),
-          content: Container(
-            width: double.maxFinite,
-            child: ListView.builder(
-              itemCount: _bluetoothService.devicesList.length,
-              itemBuilder: (context, index) {
-                BluetoothDevice device = _bluetoothService.devicesList[index];
-                return ListTile(
-                  title: Text(device.name ?? 'Unknown device'),
-                  subtitle: Text(device.address.toString()),
-                  onTap: () async {
-                    await _bluetoothService.connectToDevice(device);
-                    Navigator.of(context).pop();
-                  },
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancelar'),
-            ),
-          ],
-        );
-      },
-    );
+    await _bluetoothService.showDevicesDialog(context, (device) async {
+      await _bluetoothService.connectToDevice(device);
+      setState(() {
+        _dataList = _bluetoothService.textController.text.split('\n');
+      });
+    });
   }
 
   @override
@@ -111,7 +93,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: _bluetoothService.init,
+                  onPressed: () => _bluetoothService.init(context),
                   child: Text('Actualizar Estado'),
                   style: ElevatedButton.styleFrom(primary: Colors.red),
                 ),
