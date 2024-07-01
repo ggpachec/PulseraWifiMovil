@@ -5,17 +5,20 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 class BluetoothService {
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
   final FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
-  final List<BluetoothDevice> _devicesList = [];
+  final Set<BluetoothDevice> _devicesList = {}; // Use Set to avoid duplicates
   BluetoothConnection? _connection;
   final TextEditingController _textController = TextEditingController();
 
   BluetoothState get bluetoothState => _bluetoothState;
-  List<BluetoothDevice> get devicesList => _devicesList;
+  List<BluetoothDevice> get devicesList => _devicesList.toList();
   TextEditingController get textController => _textController;
+
+  Stream<BluetoothState> get bluetoothStateStream =>
+      _bluetooth.onStateChanged();
 
   Future<void> init(BuildContext context) async {
     await _getBluetoothState(context);
-    _startDiscovery();
+    startDiscovery();
   }
 
   Future<void> _getBluetoothState(BuildContext context) async {
@@ -46,11 +49,11 @@ class BluetoothService {
     );
   }
 
-  void _startDiscovery() {
+  void startDiscovery() {
     _bluetooth.startDiscovery().listen((r) {
-      if (!_devicesList.contains(r.device)) {
-        _devicesList.add(r.device);
-      }
+      _devicesList.add(r.device);
+    }).onDone(() {
+      // Optionally handle when discovery is done
     });
   }
 
@@ -90,7 +93,7 @@ class BluetoothService {
                 shrinkWrap: true,
                 itemCount: _devicesList.length,
                 itemBuilder: (context, index) {
-                  BluetoothDevice device = _devicesList[index];
+                  BluetoothDevice device = _devicesList.elementAt(index);
                   return ListTile(
                     title: Text(device.name ?? 'Unknown device'),
                     subtitle: Text(device.address.toString()),

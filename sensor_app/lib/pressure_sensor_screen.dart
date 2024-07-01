@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'bluetooth_service.dart';
 
 class PressureSensorScreen extends StatefulWidget {
   @override
@@ -10,31 +9,163 @@ class PressureSensorScreen extends StatefulWidget {
 }
 
 class _PressureSensorScreenState extends State<PressureSensorScreen> {
-  final BluetoothService _bluetoothService = BluetoothService();
+  FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
+  BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
+  List<BluetoothDevice> _devicesList = [];
+  BluetoothConnection? _connection;
+  TextEditingController _textController = TextEditingController();
   List<String> _dataList = [];
+  bool _isDiscovering = false;
+  String _buffer = '';
 
   @override
   void initState() {
     super.initState();
-    _initializeBluetooth();
+    _bluetooth.state.then((state) {
+      setState(() {
+        _bluetoothState = state;
+      });
+
+      if (state == BluetoothState.STATE_OFF) {
+        _showBluetoothDialog();
+      }
+    });
+
+    _bluetooth.onStateChanged().listen((BluetoothState state) {
+      setState(() {
+        _bluetoothState = state;
+      });
+      if (state == BluetoothState.STATE_ON) {
+        _startDiscovery();
+      } else if (state == BluetoothState.STATE_OFF) {
+        _showBluetoothDialog();
+      }
+    });
+
+    if (_bluetoothState == BluetoothState.STATE_ON) {
+      _startDiscovery();
+    }
   }
 
-  Future<void> _initializeBluetooth() async {
-    await _bluetoothService.init(context);
-    _bluetoothService.textController.addListener(() {
+  void _showBluetoothDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Bluetooth no está encendido'),
+          content: Text('Por favor, encienda el Bluetooth para continuar.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _bluetooth.requestEnable();
+              },
+              child: Text('Encender Bluetooth'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _startDiscovery() {
+    setState(() {
+      _isDiscovering = true;
+      _devicesList.clear();
+    });
+
+    _bluetooth.startDiscovery().listen((r) {
       setState(() {
-        _dataList = _bluetoothService.textController.text.split('\n');
+        if (!_devicesList.contains(r.device)) {
+          _devicesList.add(r.device);
+        }
       });
+    }).onDone(() {
+      setState(() {
+        _isDiscovering = false;
+      });
+    });
+  }
+
+  Future<void> _connectToDevice(BluetoothDevice device) async {
+    try {
+      _connection = await BluetoothConnection.toAddress(device.address);
+      print('Conectado al dispositivo ${device.name}');
+
+      _connection!.input?.listen((Uint8List data) {
+        final receivedData = String.fromCharCodes(data);
+        print('Data recibida: $receivedData');
+        setState(() {
+          _buffer += receivedData;
+          int index;
+          while ((index = _buffer.indexOf('\n')) != -1) {
+            String line = _buffer.substring(0, index).trim();
+            _buffer = _buffer.substring(index + 1);
+            if (line.isNotEmpty) {
+              _dataList.add(line);
+            }
+          }
+        });
+      });
+    } catch (e) {
+      print('Error al conectar: $e');
+    }
+  }
+
+  Future<void> _closeConnection() async {
+    await _connection?.close();
+    _connection?.dispose();
+    setState(() {
+      _textController.text = "";
+      _dataList = [];
+      _buffer = '';
     });
   }
 
   void _showDeviceDialog() async {
-    await _bluetoothService.showDevicesDialog(context, (device) async {
-      await _bluetoothService.connectToDevice(device);
-      setState(() {
-        _dataList = _bluetoothService.textController.text.split('\n');
-      });
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Dispositivos encontrados...'),
+              content: Container(
+                width: double.minPositive,
+                child: LimitedBox(
+                  maxHeight: 200,
+                  child: _isDiscovering
+                      ? Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _devicesList.length,
+                          itemBuilder: (context, index) {
+                            BluetoothDevice device = _devicesList[index];
+                            return ListTile(
+                              title: Text(device.name ?? 'Unknown device'),
+                              subtitle: Text(device.address.toString()),
+                              onTap: () {
+                                _connectToDevice(device);
+                                Navigator.of(context).pop();
+                              },
+                            );
+                          },
+                        ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancelar'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -92,12 +223,12 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () => _bluetoothService.init(context),
+                  onPressed: _startDiscovery,
                   child: Text('Actualizar Estado'),
                   style: ElevatedButton.styleFrom(primary: Colors.red),
                 ),
                 ElevatedButton(
-                  onPressed: _bluetoothService.closeConnection,
+                  onPressed: _closeConnection,
                   child: Text('Cerrar Conexión'),
                   style: ElevatedButton.styleFrom(primary: Colors.red),
                 ),
@@ -117,28 +248,29 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                'Estado Bluetooth: ${_bluetoothService.bluetoothState == BluetoothState.STATE_ON ? "Conectado" : "Desconectado"}',
+                'Estado Bluetooth: ${_bluetoothState == BluetoothState.STATE_ON ? "Conectado" : "Desconectado"}',
                 style: TextStyle(color: Colors.white),
               ),
             ),
             SizedBox(height: 10),
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ListView.builder(
-                  itemCount: _dataList.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: Icon(Icons.brightness_1, color: Colors.teal),
-                      title: Text(_dataList[index]),
-                      trailing: Text(
-                        "${DateTime.now().hour}:${DateTime.now().minute} h",
-                      ),
-                    );
-                  },
+              child: SingleChildScrollView(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: _dataList.map((data) {
+                      return ListTile(
+                        leading: Icon(Icons.brightness_1, color: Colors.teal),
+                        title: Text(data),
+                        trailing: Text(
+                          "${DateTime.now().hour}:${DateTime.now().minute} h",
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
             ),
@@ -146,5 +278,11 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _connection?.dispose(); // Asegura que la conexión se cierre correctamente
+    super.dispose();
   }
 }
