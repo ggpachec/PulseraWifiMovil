@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: _login,
                   child: Text('Log in'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.teal,
+                    backgroundColor: Colors.teal,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
                   ),

@@ -85,7 +85,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   onPressed: _resetPassword,
                   child: Text('Enviar solicitud'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.teal,
+                    backgroundColor: Colors.teal,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
                   ),

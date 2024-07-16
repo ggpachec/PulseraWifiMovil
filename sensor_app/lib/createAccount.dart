@@ -131,7 +131,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   onPressed: _register,
                   child: Text('Registrar'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.teal,
+                    backgroundColor: Colors.teal,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
                   ),

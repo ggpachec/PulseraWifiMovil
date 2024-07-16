@@ -225,12 +225,12 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
                 ElevatedButton(
                   onPressed: _startDiscovery,
                   child: Text('Actualizar Estado'),
-                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 ),
                 ElevatedButton(
                   onPressed: _closeConnection,
                   child: Text('Cerrar Conexión'),
-                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 ),
               ],
             ),
@@ -238,7 +238,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
             ElevatedButton(
               onPressed: _showDeviceDialog,
               child: Text('Conectar Dispositivo'),
-              style: ElevatedButton.styleFrom(primary: Colors.blue),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
             ),
             SizedBox(height: 10),
             Container(

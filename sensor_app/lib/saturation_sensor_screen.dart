@@ -94,12 +94,12 @@ class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
                 ElevatedButton(
                   onPressed: () => _bluetoothService.init(context),
                   child: Text('Actualizar Estado'),
-                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 ),
                 ElevatedButton(
                   onPressed: _bluetoothService.closeConnection,
                   child: Text('Cerrar Conexión'),
-                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 ),
               ],
             ),
@@ -107,7 +107,7 @@ class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
             ElevatedButton(
               onPressed: _showDeviceDialog,
               child: Text('Conectar Dispositivo'),
-              style: ElevatedButton.styleFrom(primary: Colors.blue),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
             ),
             SizedBox(height: 10),
             Container(

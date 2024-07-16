@@ -118,7 +118,7 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
                 onPressed: () {},
                 child: Text('GUARDAR'),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.teal,
+                  backgroundColor: Colors.teal,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

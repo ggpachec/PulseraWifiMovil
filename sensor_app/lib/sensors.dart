@@ -108,7 +108,7 @@ class SensorsScreen extends StatelessWidget {
         icon: Icon(icon, size: 32),
         label: Text(title, style: TextStyle(fontSize: 18)),
         style: ElevatedButton.styleFrom(
-          primary: color,
+          backgroundColor: color,
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
