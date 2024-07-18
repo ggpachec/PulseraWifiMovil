@@ -6,7 +6,7 @@ class SensorsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sensores'),
-        backgroundColor: Colors.teal,
+        //backgroundColor: Colors.teal,
         actions: [
           IconButton(
             icon: Icon(Icons.settings, size: 28),

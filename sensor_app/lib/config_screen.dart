@@ -27,7 +27,7 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Configuración de límites'),
-        backgroundColor: Colors.teal,
+        //backgroundColor: Colors.teal,
         actions: [
           IconButton(
             icon: Stack(
@@ -118,7 +118,7 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
                 onPressed: () {},
                 child: Text('GUARDAR'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
+                  //backgroundColor: Colors.teal,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

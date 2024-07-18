@@ -6,7 +6,7 @@ class GeneralSettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Configuración General'),
-        backgroundColor: Colors.teal,
+        //backgroundColor: Colors.teal,
       ),
       body: ListView(
         padding: EdgeInsets.all(16.0),

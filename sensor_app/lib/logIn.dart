@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: _login,
                   child: Text('Log in'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
+                    //backgroundColor: Colors.teal,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
                   ),

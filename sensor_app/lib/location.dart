@@ -73,7 +73,7 @@ class _LocationScreenState extends State<LocationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Ubicación Actual'),
-        backgroundColor: Colors.blue,
+        //backgroundColor: Colors.blue,
       ),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(

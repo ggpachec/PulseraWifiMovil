@@ -53,7 +53,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
       appBar: AppBar(
         leading: Icon(Icons.notifications),
         title: Text('Alertas y Notificaciones'),
-        backgroundColor: Colors.teal,
+        //backgroundColor: Colors.teal,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

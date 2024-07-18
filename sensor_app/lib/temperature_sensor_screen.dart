@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'bluetooth_service.dart';
 import 'api_service.dart';
 
 class TemperatureSensorScreen extends StatefulWidget {
@@ -12,6 +11,10 @@ class TemperatureSensorScreen extends StatefulWidget {
 }
 
 class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
+  // Agrega un contador
+  int _recordCounter = 0;
+  final int _recordThreshold = 25;  // Cambia a la cantidad de registros que deseas saltarte
+
   final ApiService apiService = ApiService();  // Instancia de ApiService
   FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
@@ -80,8 +83,9 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
 
     _bluetooth.startDiscovery().listen((r) {
       setState(() {
-        if (!_devicesList.contains(r.device)) {
-          _devicesList.add(r.device);
+        final device = r.device;
+        if (!_devicesList.any((d) => d.address == device.address)) {
+          _devicesList.add(device);
         }
       });
     }).onDone(() {
@@ -120,17 +124,26 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
 
   Future<void> _sendDataToApi(String data) async {
     Map<String, dynamic> newData = {
-      'servicio': '1',  // Temperatura
+      'servicio': '5',  // Temperatura
       'fecha': DateTime.now().toIso8601String().split('T').first,
       'hora': DateTime.now().toIso8601String().split('T').last.split('.').first,
       'medicion': data,
     };
 
     try {
-      await apiService.createData(newData);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Datos enviados exitosamente')),
-      );
+      // Incrementa el contador
+      _recordCounter++;
+
+      // Solo guarda cuando el contador alcanza el umbral
+      if (_recordCounter >= _recordThreshold) {
+        await apiService.createData(newData);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Datos enviados exitosamente')),
+        );
+
+        // Reinicia el contador
+        _recordCounter = 0;
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al enviar datos: $e')),
@@ -200,7 +213,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sensor de Temperatura'),
-        backgroundColor: Colors.teal,
+        foregroundColor: Colors.teal,
         actions: [
           IconButton(
             icon: Stack(

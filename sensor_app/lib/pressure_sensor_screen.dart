@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'api_service.dart';
 
 class PressureSensorScreen extends StatefulWidget {
   @override
@@ -9,6 +10,11 @@ class PressureSensorScreen extends StatefulWidget {
 }
 
 class _PressureSensorScreenState extends State<PressureSensorScreen> {
+  // Agrega un contador
+  int _recordCounter = 0;
+  final int _recordThreshold = 25;  // Cambia a la cantidad de registros que deseas saltarte
+
+  final ApiService apiService = ApiService();  // Instancia de ApiService
   FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
   List<BluetoothDevice> _devicesList = [];
@@ -76,8 +82,9 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
 
     _bluetooth.startDiscovery().listen((r) {
       setState(() {
-        if (!_devicesList.contains(r.device)) {
-          _devicesList.add(r.device);
+        final device = r.device;
+        if (!_devicesList.any((d) => d.address == device.address)) {
+          _devicesList.add(device);
         }
       });
     }).onDone(() {
@@ -103,12 +110,42 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
             _buffer = _buffer.substring(index + 1);
             if (line.isNotEmpty) {
               _dataList.add(line);
+              _sendDataToApi(line);
             }
           }
         });
       });
     } catch (e) {
       print('Error al conectar: $e');
+    }
+  }
+
+  Future<void> _sendDataToApi(String data) async {
+    Map<String, dynamic> newData = {
+      'servicio': '1',  // Temperatura
+      'fecha': DateTime.now().toIso8601String().split('T').first,
+      'hora': DateTime.now().toIso8601String().split('T').last.split('.').first,
+      'medicion': data,
+    };
+
+    try {
+      // Incrementa el contador
+      _recordCounter++;
+
+      // Solo guarda cuando el contador alcanza el umbral
+      if (_recordCounter >= _recordThreshold) {
+        await apiService.createData(newData);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Datos enviados exitosamente')),
+        );
+
+        // Reinicia el contador
+        _recordCounter = 0;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al enviar datos: $e')),
+      );
     }
   }
 
@@ -173,7 +210,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sensor de Presión'),
-        backgroundColor: Colors.teal,
+        //backgroundColor: Colors.teal,
         actions: [
           IconButton(
             icon: Stack(

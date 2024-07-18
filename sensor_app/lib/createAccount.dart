@@ -62,7 +62,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -131,7 +131,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   onPressed: _register,
                   child: Text('Registrar'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
+                    //backgroundColor: Colors.teal,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
                   ),
