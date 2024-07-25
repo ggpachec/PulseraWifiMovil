@@ -54,90 +54,113 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: 50),
-                Icon(Icons.favorite, size: 100, color: Colors.teal),
-                SizedBox(height: 20),
-                Text(
-                  '¡Bienvenido!',
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.teal),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Iniciar Sesión',
-                  style: TextStyle(fontSize: 20, color: Colors.teal),
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.person),
-                    labelText: 'Nombre de usuario',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30)),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/PANTALLA.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 50),
+                  //Icon(Icons.favorite, size: 100, color: Colors.teal),
+                  Image.assets('assets/images/LOGO2.png', height: 100),
+                  SizedBox(height: 10),
+                  Text(
+                    '¡Bienvenido!',
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Open Sans'
+                        color: Color(0xFF000000)),
                   ),
-                  validator: _validateUsername,
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.email),
-                    labelText: 'Correo Electrónico',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                  SizedBox(height: 20),
+                  Align(
+                    alignment: Alignment.centerLeft, 
+                    child: Text(
+                      'Iniciar Sesión',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'Open Sans', 
+                          color: Color(0XFF3F6BF4))),
                   ),
-                  validator: _validateEmail,
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock),
-                    labelText: 'Contraseña',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                  SizedBox(height: 7),
+                  TextFormField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      prefixIcon: Image.asset('assets/images/01.png'),
+                      labelText: 'Nombre de Usuario',
+                      border: UnderlineInputBorder(),
+                    ),
+                    validator: _validateUsername,
                   ),
-                  validator: _validatePassword,
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _login,
-                  child: Text('Log in'),
-                  style: ElevatedButton.styleFrom(
-                    //backgroundColor: Colors.teal,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      prefixIcon: Image.asset('assets/images/02.png'),
+                      labelText: 'Correo Electrónico',
+                      border: UnderlineInputBorder(),
+                    ),
+                    validator: _validateEmail,
                   ),
-                ),
-                SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/forgotPassword');
-                  },
-                  child: Text('¿Olvidaste tu contraseña?',
-                      style: TextStyle(color: Colors.teal)),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/createAccount');
-                  },
-                  child: Text('¿No tienes una cuenta?',
-                      style: TextStyle(color: Colors.redAccent)),
-                ),
-              ],
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      prefixIcon: Image.asset('assets/images/03.png'),
+                      labelText: 'Contraseña',
+                      suffixIcon: Image.asset('assets/images/04.png'),
+                      border: UnderlineInputBorder(),
+                    ),
+                    validator: _validatePassword,
+                  ),
+                  SizedBox(height: 20),
+                  SizedBox(
+                    width: 200, 
+                    child: ElevatedButton(
+                      onPressed: _login,
+                      child: Text('Iniciar sesión'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFF4F4F5), 
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                    ),
+                  ), 
+                  Align(
+                    alignment: Alignment.centerRight, 
+                    child: SizedBox(
+                      width: 200, 
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/forgotPassword');
+                        },
+                        child: Text('¿Olvidaste tu contraseña?',
+                            style: TextStyle(color: Color(0XFF767676)),
+                        ),
+                      ),
+                    ),  
+                  ),
+                  SizedBox(height: 30),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/createAccount');
+                    },
+                    child: Text('¿No tienes una cuenta?',
+                        style: TextStyle(color: Color(0xFFF4F4F5)),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
