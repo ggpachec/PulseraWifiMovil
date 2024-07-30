@@ -62,7 +62,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.white,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -71,23 +70,27 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.favorite, size: 100, color: Colors.teal),
-                SizedBox(height: 20),
+                Image.asset('lib/assets/images/LOGO2.png', height: 150),
+                SizedBox(height: 10),
                 Text(
                   'Crear Cuenta',
                   style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.teal),
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF3F6BF4),
+                  ),
                 ),
                 SizedBox(height: 10),
                 TextFormField(
                   controller: _usernameController,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.person),
-                    labelText: 'Nombre de usuario',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset('lib/assets/images/01.png',
+                          width: 24, height: 24),
+                    ),
+                    labelText: 'Nombre de Usuario',
+                    border: UnderlineInputBorder(),
                   ),
                   validator: _validateUsername,
                 ),
@@ -95,10 +98,13 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.email),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset('lib/assets/images/02.png',
+                          width: 24, height: 24),
+                    ),
                     labelText: 'Correo Electrónico',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                    border: UnderlineInputBorder(),
                   ),
                   validator: _validateEmail,
                 ),
@@ -107,10 +113,18 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset('lib/assets/images/03.png',
+                          width: 24, height: 24),
+                    ),
                     labelText: 'Contraseña',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset('lib/assets/images/04.png',
+                          width: 24, height: 24),
+                    ),
+                    border: UnderlineInputBorder(),
                   ),
                   validator: _validatePassword,
                 ),
@@ -119,21 +133,35 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   controller: _confirmPasswordController,
                   obscureText: true,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset('lib/assets/images/03.png',
+                          width: 24, height: 24),
+                    ),
                     labelText: 'Repetir Contraseña',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset('lib/assets/images/04.png',
+                          width: 24, height: 24),
+                    ),
+                    border: UnderlineInputBorder(),
                   ),
                   validator: _validateConfirmPassword,
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _register,
-                  child: Text('Registrar'),
-                  style: ElevatedButton.styleFrom(
-                    //backgroundColor: Colors.teal,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _register,
+                    child: Text('Registrar', style: TextStyle(fontSize: 18)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF3F6BF4),
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                   ),
                 ),
               ],
