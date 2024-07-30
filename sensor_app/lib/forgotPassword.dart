@@ -51,7 +51,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.white,
+      backgroundColor: Colors.white,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -60,34 +60,45 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.lock_open, size: 100, color: Colors.teal),
+                Icon(Icons.lock_reset, size: 100, color: Colors.black),
                 SizedBox(height: 20),
                 Text(
                   'Recuperar Contraseña',
                   style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.teal),
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF3F6BF4),
+                  ),
                 ),
                 SizedBox(height: 10),
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.email),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Image.asset('lib/assets/images/02.png',
+                          width: 24, height: 24),
+                    ),
                     labelText: 'Correo Electrónico',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                    border: UnderlineInputBorder(),
                   ),
                   validator: _validateEmail,
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _resetPassword,
-                  child: Text('Enviar solicitud'),
-                  style: ElevatedButton.styleFrom(
-                    //backgroundColor: Colors.teal,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _resetPassword,
+                    child: Text('Enviar Solicitud',
+                        style: TextStyle(fontSize: 18)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                   ),
                 ),
               ],
