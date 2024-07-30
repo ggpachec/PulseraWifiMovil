@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/PANTALLA.png'),
+            image: AssetImage('lib/assets/images/PANTALLA.png'),
             fit: BoxFit.cover,
           ),
         ),
@@ -70,32 +70,47 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(height: 50),
-                  //Icon(Icons.favorite, size: 100, color: Colors.teal),
-                  Image.assets('assets/images/LOGO2.png', height: 100),
+                  Image.asset('lib/assets/images/LOGO.png', height: 100),
                   SizedBox(height: 10),
+                  Text(
+                    'DoctorApp',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Open Sans',
+                      color: Color(0xFF3F6BF4),
+                    ),
+                  ),
                   Text(
                     '¡Bienvenido!',
                     style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Open Sans'
-                        color: Color(0xFF000000)),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Open Sans',
+                      color: Colors.black,
+                    ),
                   ),
                   SizedBox(height: 20),
                   Align(
-                    alignment: Alignment.centerLeft, 
+                    alignment: Alignment.centerLeft,
                     child: Text(
                       'Iniciar Sesión',
                       style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: 'Open Sans', 
-                          color: Color(0XFF3F6BF4))),
+                        fontSize: 20,
+                        fontFamily: 'Open Sans',
+                        color: Color(0xFF3F6BF4),
+                      ),
+                    ),
                   ),
                   SizedBox(height: 7),
                   TextFormField(
                     controller: _usernameController,
                     decoration: InputDecoration(
-                      prefixIcon: Image.asset('assets/images/01.png'),
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Image.asset('lib/assets/images/01.png',
+                            width: 24, height: 24),
+                      ),
                       labelText: 'Nombre de Usuario',
                       border: UnderlineInputBorder(),
                     ),
@@ -105,7 +120,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
-                      prefixIcon: Image.asset('assets/images/02.png'),
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Image.asset('lib/assets/images/02.png',
+                            width: 24, height: 24),
+                      ),
                       labelText: 'Correo Electrónico',
                       border: UnderlineInputBorder(),
                     ),
@@ -116,48 +135,58 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      prefixIcon: Image.asset('assets/images/03.png'),
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Image.asset('lib/assets/images/03.png',
+                            width: 24, height: 24),
+                      ),
                       labelText: 'Contraseña',
-                      suffixIcon: Image.asset('assets/images/04.png'),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Image.asset('lib/assets/images/04.png',
+                            width: 24, height: 24),
+                      ),
                       border: UnderlineInputBorder(),
                     ),
                     validator: _validatePassword,
                   ),
                   SizedBox(height: 20),
                   SizedBox(
-                    width: 200, 
+                    width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _login,
                       child: Text('Iniciar sesión'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFF4F4F5), 
+                        backgroundColor: Color(0xFF3F6BF4),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
                     ),
-                  ), 
+                  ),
                   Align(
-                    alignment: Alignment.centerRight, 
-                    child: SizedBox(
-                      width: 200, 
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/forgotPassword');
-                        },
-                        child: Text('¿Olvidaste tu contraseña?',
-                            style: TextStyle(color: Color(0XFF767676)),
-                        ),
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/forgotPassword');
+                      },
+                      child: Text(
+                        '¿Olvidaste tu contraseña?',
+                        style: TextStyle(color: Color(0xFF3F6BF4)),
                       ),
-                    ),  
+                    ),
                   ),
                   SizedBox(height: 30),
                   TextButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/createAccount');
                     },
-                    child: Text('¿No tienes una cuenta?',
-                        style: TextStyle(color: Color(0xFFF4F4F5)),
+                    child: Text(
+                      '¿No tienes una cuenta?',
+                      style: TextStyle(color: Color(0xFF3F6BF4)),
+                    ),
                   ),
                 ],
               ),

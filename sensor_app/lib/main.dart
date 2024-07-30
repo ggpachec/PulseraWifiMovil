@@ -10,6 +10,7 @@ import 'tracking_screen.dart';
 import 'alertas.dart';
 import 'config_screen.dart';
 import 'configuracion.dart';
+import 'welcome.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,8 +21,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/login',
+      initialRoute: '/welcome',
       routes: {
+        '/welcome': (context) => WelcomeScreen(),
         '/login': (context) => LoginScreen(),
         '/createAccount': (context) => CreateAccountScreen(),
         '/forgotPassword': (context) => ForgotPasswordScreen(),
