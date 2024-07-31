@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 25),
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/createAccount');

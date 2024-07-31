@@ -1,6 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:sensor_app/alertas.dart';
+import 'package:sensor_app/sensors.dart';
 
-class GeneralSettingsScreen extends StatelessWidget {
+class GeneralSettingsScreen extends StatefulWidget {
+  @override
+  _GeneralSettingsScreenState createState() => _GeneralSettingsScreenState();
+}
+
+class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    SensorsScreen(), // Define tus pantallas aquí
+    CalendarScreen(),
+    AlertsScreen(),
+    GeneralSettingsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    // Navegar a la página seleccionada
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => _pages[index]),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,16 +46,15 @@ class GeneralSettingsScreen extends StatelessWidget {
           Center(
             child: Column(
               children: [
-                Image.asset(
-                  'lib/assets/images/LOGO2.png', // Ruta del logo
-                  height: 100,
-                ),
-                SizedBox(height: 20),
+                SizedBox(height: 50),
+                Image.asset('lib/assets/images/LOGO2.png', height: 180),
+                SizedBox(height: 10),
                 Text(
                   'Configuración General',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize:24,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Open Sans',
                     color: Colors.black,
                   ),
                 ),
@@ -74,26 +101,29 @@ class GeneralSettingsScreen extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.blue,
         items: [
           BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('assets/images/home.png')),
+            icon: ImageIcon(AssetImage('lib/assets/images/12.png')),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('assets/images/calendar.png')),
+            icon: ImageIcon(AssetImage('lib/assets/images/13.png')),
             label: 'Calendario',
           ),
           BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('assets/images/notifications.png')),
+            icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
             label: 'Notificaciones',
           ),
           BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('assets/images/profile.png')),
+            icon: ImageIcon(AssetImage('lib/assets/images/15.png')),
             label: 'Perfil',
           ),
         ],
+        currentIndex: _selectedIndex,
         selectedItemColor: Color(0xFF3F6BF4),
-        unselectedItemColor: Color(0XFFF5F5F6),
+        unselectedItemColor: Color(0XFF000000),
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -107,8 +137,8 @@ class GeneralSettingsScreen extends StatelessWidget {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8.0),
       child: ExpansionTile(
-        leading: ImageIcon(AssetImage(iconPath), color: Colors.black, size: 30),
-        title: Text(title, style: TextStyle(fontSize: 18, color: Colors.black)),
+        leading: ImageIcon(AssetImage(iconPath), color: Colors.black, size: 25),
+        title: Text(title, style: TextStyle(fontSize: 20, color: Colors.black)),
         children: [content],
       ),
     );
@@ -201,9 +231,18 @@ class GeneralSettingsScreen extends StatelessWidget {
           Text('Versión: 1.0.0', style: TextStyle(fontSize: 16)),
           SizedBox(height: 10),
           Text('Desarrollado por: Paula Peralta',
-              style: TextStyle(fontSize: 16)),
+              style: TextStyle(fontSize: 18)),
         ],
       ),
+    );
+  }
+}
+
+class CalendarScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(child: Text('Calendar Screen')),
     );
   }
 }

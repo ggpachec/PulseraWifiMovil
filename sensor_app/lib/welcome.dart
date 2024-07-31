@@ -17,17 +17,9 @@ class WelcomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Spacer(flex: 2),
-                Image.asset('lib/assets/images/LOGO.png', fit: BoxFit.cover), // Tamaño aumentado
+                SizedBox(height: 10),
+                Image.asset('lib/assets/images/LOGO.png', fit: BoxFit.fitHeight), // Tamaño aumentado
                 SizedBox(height: 20),
-                Text(
-                  'DoctorApp',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Open Sans',
-                    color: Colors.white,
-                  ),
-                ),
                 Spacer(flex: 1),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -48,7 +40,7 @@ class WelcomeScreen extends StatelessWidget {
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.white,
                           padding:
-                              EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                              EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
