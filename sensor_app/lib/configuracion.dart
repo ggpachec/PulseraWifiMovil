@@ -4,44 +4,96 @@ class GeneralSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // Color de fondo blanco
       appBar: AppBar(
-        title: Text('Configuración General'),
-        //backgroundColor: Colors.teal,
+        backgroundColor: Colors.white, // Fondo blanco
+        elevation: 0, // Sin sombra
+        leading: IconButton(
+          icon: Icon(Icons.menu, color: Colors.black), // Icono de menú en negro
+          onPressed: () {},
+        ),
       ),
-      body: ListView(
-        padding: EdgeInsets.all(16.0),
+      body: Column(
         children: [
-          _buildSettingsOption(
-            context,
-            'Perfil',
-            Icons.person,
-            _buildProfileSection(),
+          Center(
+            child: Column(
+              children: [
+                Image.asset(
+                  'lib/assets/images/LOGO2.png', // Ruta del logo
+                  height: 100,
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Configuración General',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
           ),
-          _buildSettingsOption(
-            context,
-            'Notificaciones',
-            Icons.notifications,
-            _buildNotificationsSection(),
-          ),
-          _buildSettingsOption(
-            context,
-            'Privacidad',
-            Icons.lock,
-            _buildPrivacySection(),
-          ),
-          _buildSettingsOption(
-            context,
-            'Idioma',
-            Icons.language,
-            _buildLanguageSection(),
-          ),
-          _buildSettingsOption(
-            context,
-            'Acerca de',
-            Icons.info,
-            _buildAboutSection(),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.all(16.0),
+              children: [
+                _buildSettingsOption(
+                  context,
+                  'Perfil',
+                  'lib/assets/images/06.png',
+                  _buildProfileSection(),
+                ),
+                _buildSettingsOption(
+                  context,
+                  'Notificaciones',
+                  'lib/assets/images/07.png',
+                  _buildNotificationsSection(),
+                ),
+                _buildSettingsOption(
+                  context,
+                  'Privacidad',
+                  'lib/assets/images/08.png',
+                  _buildPrivacySection(),
+                ),
+                _buildSettingsOption(
+                  context,
+                  'Idioma',
+                  'lib/assets/images/09.png',
+                  _buildLanguageSection(),
+                ),
+                _buildSettingsOption(
+                  context,
+                  'Acerca de',
+                  'lib/assets/images/10.png',
+                  _buildAboutSection(),
+                ),
+              ],
+            ),
           ),
         ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: ImageIcon(AssetImage('assets/images/home.png')),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: ImageIcon(AssetImage('assets/images/calendar.png')),
+            label: 'Calendario',
+          ),
+          BottomNavigationBarItem(
+            icon: ImageIcon(AssetImage('assets/images/notifications.png')),
+            label: 'Notificaciones',
+          ),
+          BottomNavigationBarItem(
+            icon: ImageIcon(AssetImage('assets/images/profile.png')),
+            label: 'Perfil',
+          ),
+        ],
+        selectedItemColor: Color(0xFF3F6BF4),
+        unselectedItemColor: Color(0XFFF5F5F6),
       ),
     );
   }
@@ -49,14 +101,14 @@ class GeneralSettingsScreen extends StatelessWidget {
   Widget _buildSettingsOption(
     BuildContext context,
     String title,
-    IconData icon,
+    String iconPath,
     Widget content,
   ) {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8.0),
       child: ExpansionTile(
-        leading: Icon(icon, color: Colors.teal, size: 30),
-        title: Text(title, style: TextStyle(fontSize: 18, color: Colors.teal)),
+        leading: ImageIcon(AssetImage(iconPath), color: Colors.black, size: 30),
+        title: Text(title, style: TextStyle(fontSize: 18, color: Colors.black)),
         children: [content],
       ),
     );
