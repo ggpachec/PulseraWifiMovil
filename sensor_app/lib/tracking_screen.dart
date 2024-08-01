@@ -1,127 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'route_history_screen.dart';
 
 class TrackingScreen extends StatefulWidget {
   @override
-  _TrackingScreenState createState() => _TrackingScreenState();
+  _TrackingSensorScreenState createState() => _TrackingSensorScreenState();
 }
 
-class _TrackingScreenState extends State<TrackingScreen> {
+class _TrackingSensorScreenState extends State<TrackingScreen> {
   late GoogleMapController _mapController;
-  late LatLng _currentPosition;
-  final Set<Polyline> _polylines = {};
-  final List<LatLng> _routeCoords = [];
-  final List<List<LatLng>> _routeHistory = [];
+  Position? _currentPosition;
+  bool _isTracking = false;
+  List<LatLng> _route = [];
 
   @override
   void initState() {
     super.initState();
-    _initLocation();
+    _getCurrentPosition();
   }
 
-  Future<void> _initLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Check if location services are enabled
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      await Geolocator.openLocationSettings();
-      return Future.error('Location services are disabled.');
-    }
-
-    // Check for location permissions
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    // Get current location
+  void _getCurrentPosition() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     setState(() {
-      _currentPosition = LatLng(position.latitude, position.longitude);
-      _routeCoords.add(_currentPosition);
-      _polylines.add(Polyline(
-        polylineId: PolylineId('route'),
-        visible: true,
-        points: _routeCoords,
-        width: 4,
-        color: Colors.blue,
-      ));
+      _currentPosition = position;
+    });
+  }
+
+  void _startTracking() {
+    setState(() {
+      _isTracking = true;
+      _route.clear();
     });
 
     Geolocator.getPositionStream(
-            locationSettings: LocationSettings(
-                accuracy: LocationAccuracy.high, distanceFilter: 10))
-        .listen((Position position) {
+      locationSettings: LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    ).listen((Position position) {
       setState(() {
-        _currentPosition = LatLng(position.latitude, position.longitude);
-        _routeCoords.add(_currentPosition);
-        _polylines.add(Polyline(
-          polylineId: PolylineId('route'),
-          visible: true,
-          points: _routeCoords,
-          width: 4,
-          color: Colors.blue,
-        ));
+        _currentPosition = position;
+        _route.add(LatLng(position.latitude, position.longitude));
       });
-      _mapController.animateCamera(CameraUpdate.newLatLng(_currentPosition));
+
+      _mapController.animateCamera(CameraUpdate.newLatLng(
+          LatLng(position.latitude, position.longitude)));
     });
   }
 
-  void _showRouteHistory() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Historial de Rutas'),
-          content: Container(
-            width: double.maxFinite,
-            child: ListView.builder(
-              itemCount: _routeHistory.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('Ruta ${index + 1}'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _showRouteOnMap(_routeHistory[index]);
-                  },
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cerrar'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showRouteOnMap(List<LatLng> route) {
+  void _stopTracking() {
     setState(() {
-      _polylines.add(Polyline(
-        polylineId: PolylineId('selected_route'),
-        visible: true,
-        points: route,
-        width: 4,
-        color: Colors.red,
-      ));
+      _isTracking = false;
     });
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
   }
 
   @override
@@ -129,7 +65,6 @@ class _TrackingScreenState extends State<TrackingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sensor de Seguimiento'),
-        backgroundColor: Colors.blue,
         actions: [
           IconButton(
             icon: Stack(
@@ -159,34 +94,72 @@ class _TrackingScreenState extends State<TrackingScreen> {
                 ),
               ],
             ),
-            onPressed: () {
-              Navigator.pushNamed(context, '/alerts');
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.history),
-            onPressed: _showRouteHistory,
+            onPressed: () {},
           ),
         ],
       ),
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: _currentPosition,
-          zoom: 15,
-        ),
-        myLocationEnabled: true,
-        myLocationButtonEnabled: true,
-        polylines: _polylines,
-        onMapCreated: (GoogleMapController controller) {
-          _mapController = controller;
-        },
-      ),
+      body: _currentPosition == null
+          ? Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _isTracking ? null : _startTracking,
+                        child: Text('Comenzar seguimiento'),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green, // Ajusta el color
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: _isTracking ? _stopTracking : null,
+                        child: Text('Parar seguimiento'),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.red, // Ajusta el color
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: GoogleMap(
+                    onMapCreated: _onMapCreated,
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(_currentPosition!.latitude,
+                          _currentPosition!.longitude),
+                      zoom: 15,
+                    ),
+                    markers: {
+                      Marker(
+                        markerId: MarkerId('currentLocation'),
+                        position: LatLng(_currentPosition!.latitude,
+                            _currentPosition!.longitude),
+                      ),
+                    },
+                    polylines: {
+                      Polyline(
+                        polylineId: PolylineId('route'),
+                        points: _route,
+                        color: Colors.blue,
+                        width: 5,
+                      ),
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/routeHistory');
+                    },
+                    child: Text('Ver historial de rutas'),
+                  ),
+                ),
+              ],
+            ),
     );
-  }
-
-  @override
-  void dispose() {
-    _mapController.dispose();
-    super.dispose();
   }
 }

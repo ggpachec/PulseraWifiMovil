@@ -11,6 +11,7 @@ import 'alertas.dart';
 import 'config_screen.dart';
 import 'configuracion.dart';
 import 'welcome.dart';
+import 'route_history_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         '/pressure': (context) => PressureSensorScreen(),
         '/saturation': (context) => SaturationSensorScreen(),
         '/tracking': (context) => TrackingScreen(),
+        '/routeHistory': (context) => RouteHistoryScreen(),
         '/alerts': (context) => AlertsScreen(),
         '/config': (context) => LimitsConfigScreen(),
         '/generalSettings': (context) => GeneralSettingsScreen(),

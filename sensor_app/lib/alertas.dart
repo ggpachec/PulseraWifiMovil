@@ -6,9 +6,7 @@ class AlertsScreen extends StatefulWidget {
 }
 
 class _AlertsScreenState extends State<AlertsScreen> {
-  int _selectedIndex = 2; // Index for the Alerts screen in the navigation bar
   String _selectedFilter = 'Emergencias Extremas';
-
   final List<Map<String, String>> _alerts = [
     {
       'type': 'Emergencias Extremas',
@@ -46,25 +44,11 @@ class _AlertsScreenState extends State<AlertsScreen> {
     return _alerts.where((alert) => alert['type'] == _selectedFilter).toList();
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // Navigate to the selected page
-    // Navigator.push(context, MaterialPageRoute(builder: (context) => _pages[index]));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        leading: Icon(Icons.arrow_back, color: Colors.black),
         title: Text(
           'Alerta y Notificaciones',
           style: TextStyle(color: Colors.black),
@@ -74,9 +58,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.notifications, color: Colors.blue),
-            onPressed: () {
-              // Handle notification icon press
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -84,24 +66,38 @@ class _AlertsScreenState extends State<AlertsScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextFormField(
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                labelText: 'BUSCAR',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(30),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  Icon(Icons.search, color: Colors.grey),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'BUSCAR',
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.filter_list, color: Colors.grey),
+                ],
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildFilterButton('Emergencias Extremas'),
                 _buildFilterButton('Emergencia Moderada'),
                 _buildFilterButton('Recordatorios'),
               ],
             ),
+            SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
                 itemCount: _filteredAlerts.length,
@@ -110,30 +106,21 @@ class _AlertsScreenState extends State<AlertsScreen> {
                   return Card(
                     color: Color(int.parse(alert['color']!)),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: ListTile(
                       leading: Icon(
                         alert['type'] == 'Emergencias Extremas'
                             ? Icons.warning
                             : alert['type'] == 'Emergencia Moderada'
-                                ? Icons.info
+                                ? Icons.info_outline
                                 : Icons.notifications,
                         color: Colors.black,
                       ),
-                      title: Text(
-                        alert['type']!,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      title: Text(alert['type']!,
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text(alert['description']!),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          // Handle delete action
-                        },
-                      ),
+                      trailing: Icon(Icons.delete, color: Colors.black),
                     ),
                   );
                 },
@@ -150,11 +137,13 @@ class _AlertsScreenState extends State<AlertsScreen> {
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
+            topLeft: Radius.circular(0),
+            topRight: Radius.circular(0),
           ),
         ),
         child: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           items: [
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('lib/assets/images/12.png')),
@@ -173,13 +162,10 @@ class _AlertsScreenState extends State<AlertsScreen> {
               label: 'Perfil',
             ),
           ],
-          currentIndex: _selectedIndex,
+          currentIndex: 2,
           selectedItemColor: Colors.white,
-          unselectedItemColor: Color(0xFF000000),
-          onTap: _onItemTapped,
+          unselectedItemColor: Colors.black,
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
         ),
       ),
     );
@@ -194,20 +180,17 @@ class _AlertsScreenState extends State<AlertsScreen> {
           });
         },
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
+          alignment: Alignment.center,
+          padding: EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: _selectedFilter == title ? Colors.blue : Colors.grey[200],
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(20),
           ),
-          child: Center(
-            child: Text(
-              title,
-              style: TextStyle(
-                color: _selectedFilter == title ? Colors.white : Colors.black,
-                fontWeight: _selectedFilter == title
-                    ? FontWeight.bold
-                    : FontWeight.normal,
-              ),
+          child: Text(
+            title,
+            style: TextStyle(
+              color: _selectedFilter == title ? Colors.white : Colors.black,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
