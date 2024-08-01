@@ -26,37 +26,10 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Configuración de límites'),
-        //backgroundColor: Colors.teal,
+        title: Text('Configuración de Límites'),
         actions: [
           IconButton(
-            icon: Stack(
-              children: [
-                Icon(Icons.notifications),
-                Positioned(
-                  right: 0,
-                  child: Container(
-                    padding: EdgeInsets.all(1),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    constraints: BoxConstraints(
-                      minWidth: 12,
-                      minHeight: 12,
-                    ),
-                    child: Text(
-                      '1',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 8,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            icon: Icon(Icons.notifications, color: Colors.black),
             onPressed: () {
               Navigator.pushNamed(context, '/alerts');
             },
@@ -68,7 +41,7 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            _buildTitle('Presión Arterial', 'Rangos mínimos', 'Rangos máximos'),
+            _buildTitle('Presión Arterial', 'Rangos Mínimos', 'Rangos Máximos'),
             _buildRangeSlider(
               'Presión Arterial',
               pressureRange,
@@ -80,7 +53,8 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
                 });
               },
             ),
-            _buildTitle('Saturación de Oxígeno'),
+            _buildTitle(
+                'Saturación de Oxígeno', 'Rangos Mínimos', 'Rangos Máximos'),
             _buildSlider(
               saturationValue,
               minSaturation,
@@ -91,7 +65,8 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
                 });
               },
             ),
-            _buildTitle('Temperatura Corporal'),
+            _buildTitle(
+                'Temperatura Corporal', 'Rangos Mínimos', 'Rangos Máximos'),
             _buildSlider(
               temperatureValue,
               minTemperature,
@@ -102,7 +77,8 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
                 });
               },
             ),
-            _buildTitle('Frecuencia Cardíaca'),
+            _buildTitle(
+                'Frecuencia Cardíaca', 'Rangos Mínimos', 'Rangos Máximos'),
             _buildSlider(
               heartRateValue,
               minHeartRate,
@@ -116,9 +92,9 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
             Center(
               child: ElevatedButton(
                 onPressed: () {},
-                child: Text('GUARDAR'),
+                child: Text('Guardar'),
                 style: ElevatedButton.styleFrom(
-                  //backgroundColor: Colors.teal,
+                  primary: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -129,24 +105,64 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF3F6BF4), Color(0xFF1E90FF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today),
+              label: 'Calendario',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications),
+              label: 'Notificaciones',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Perfil',
+            ),
+          ],
+          currentIndex: 0,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.black,
+          onTap: (index) {
+            // handle navigation
+          },
+        ),
+      ),
     );
   }
 
-  Widget _buildTitle(String title, [String? minLabel, String? maxLabel]) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              title,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(width: 8),
-            Icon(Icons.info_outline, color: Colors.grey),
-          ],
-        ),
-        if (minLabel != null && maxLabel != null) ...[
+  Widget _buildTitle(String title, String minLabel, String maxLabel) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue),
+              ),
+              SizedBox(width: 8),
+              Icon(Icons.info_outline, color: Colors.grey),
+            ],
+          ),
           SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -156,7 +172,7 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
             ],
           ),
         ],
-      ],
+      ),
     );
   }
 
@@ -180,6 +196,8 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
             values.end.round().toString(),
           ),
           onChanged: onChanged,
+          activeColor: Colors.blue,
+          inactiveColor: Colors.grey,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -209,6 +227,8 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
           divisions: (max - min).toInt(),
           label: value.round().toString(),
           onChanged: onChanged,
+          activeColor: Colors.blue,
+          inactiveColor: Colors.grey,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

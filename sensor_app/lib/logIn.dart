@@ -133,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     labelText: 'Contraseña',
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureText ? Icons.visibility : Icons.visibility_off,
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {

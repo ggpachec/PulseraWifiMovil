@@ -11,10 +11,10 @@ class _SensorsScreenState extends State<SensorsScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    SensorsScreen(), // Define tus pantallas aquí
+    HomeScreen(),
     CalendarScreen(),
-    AlertsScreen(),
-    GeneralSettingsScreen(),
+    NotificationsScreen(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -41,83 +41,98 @@ class _SensorsScreenState extends State<SensorsScreen> {
         ),
       ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(height: 10),
-              Image.asset('lib/assets/images/21.png', height: 180),
-              SizedBox(height: 10),
-              Text(
-                'Sensores',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Open Sans',
-                  color: Colors.black,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(height: 20),
+                Image.asset('lib/assets/images/21.png', height: 120),
+                SizedBox(height: 10),
+                Text(
+                  'Sensores',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Open Sans',
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              SizedBox(height: 20),
-              _buildSensorButton(
-                context,
-                'Sensor de Temperatura',
-                'lib/assets/images/16.png',
-                '/temperature',
-              ),
-              _buildSensorButton(
-                context,
-                'Sensor de Presión',
-                'lib/assets/images/17.png',
-                '/pressure',
-              ),
-              _buildSensorButton(
-                context,
-                'Sensor de Saturación',
-                'lib/assets/images/18.png',
-                '/saturation',
-              ),
-              _buildSensorButton(
-                context,
-                'Sensor de Seguimiento',
-                'lib/assets/images/19.png',
-                '/tracking',
-              ),
-              _buildSensorButton(
-                context,
-                'Configuración de Límites',
-                'lib/assets/images/20.png',
-                '/config',
-                color: Colors.blue,
-              ),
-            ],
+                SizedBox(height: 20),
+                _buildSensorButton(
+                  context,
+                  'Sensor de Temperatura',
+                  'lib/assets/images/16.png',
+                  '/temperature',
+                ),
+                _buildSensorButton(
+                  context,
+                  'Sensor de Presión',
+                  'lib/assets/images/17.png',
+                  '/pressure',
+                ),
+                _buildSensorButton(
+                  context,
+                  'Sensor de Saturación',
+                  'lib/assets/images/18.png',
+                  '/saturation',
+                ),
+                _buildSensorButton(
+                  context,
+                  'Sensor de Seguimiento',
+                  'lib/assets/images/19.png',
+                  '/tracking',
+                ),
+                _buildSensorButton(
+                  context,
+                  'Configuración de Límites',
+                  'lib/assets/images/20.png',
+                  '/config',
+                  color: Colors.blue,
+                ),
+              ],
+            ),
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.blue,
-        items: [
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('lib/assets/images/12.png')),
-            label: 'Home',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF3F6BF4), Color(0xFF1E90FF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('lib/assets/images/13.png')),
-            label: 'Calendario',
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30.0),
+            topRight: Radius.circular(30.0),
           ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
-            label: 'Notificaciones',
-          ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('lib/assets/images/15.png')),
-            label: 'Perfil',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF3F6BF4),
-        unselectedItemColor: Color(0XFF000000),
-        onTap: _onItemTapped,
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
+          items: [
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/12.png')),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/13.png')),
+              label: 'Calendario',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
+              label: 'Notificaciones',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/15.png')),
+              label: 'Perfil',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.black,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
@@ -130,7 +145,7 @@ class _SensorsScreenState extends State<SensorsScreen> {
     Color color = Colors.black,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: ElevatedButton.icon(
         icon: ImageIcon(AssetImage(iconPath), size: 32, color: Colors.white),
         label: Text(title, style: TextStyle(fontSize: 18, color: Colors.white)),

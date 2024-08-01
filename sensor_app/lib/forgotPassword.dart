@@ -86,8 +86,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Center(
+      body: Center(
+        child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(
@@ -95,8 +95,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  SizedBox(height: 50),
                   Image.asset('lib/assets/images/candadopassword.png',
-                      height: 100),
+                      height: 130),
                   SizedBox(height: 20),
                   Text(
                     'Recuperar Contraseña',
@@ -106,7 +107,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       color: Color(0xFF3F6BF4),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 20),
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
@@ -136,6 +137,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 50),
                 ],
               ),
             ),

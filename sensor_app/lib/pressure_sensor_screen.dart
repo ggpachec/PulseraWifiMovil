@@ -12,9 +12,10 @@ class PressureSensorScreen extends StatefulWidget {
 class _PressureSensorScreenState extends State<PressureSensorScreen> {
   // Agrega un contador
   int _recordCounter = 0;
-  final int _recordThreshold = 25;  // Cambia a la cantidad de registros que deseas saltarte
+  final int _recordThreshold =
+      25; // Cambia a la cantidad de registros que deseas saltarte
 
-  final ApiService apiService = ApiService();  // Instancia de ApiService
+  final ApiService apiService = ApiService(); // Instancia de ApiService
   FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
   List<BluetoothDevice> _devicesList = [];
@@ -122,7 +123,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
 
   Future<void> _sendDataToApi(String data) async {
     Map<String, dynamic> newData = {
-      'servicio': '1',  // Temperatura
+      'servicio': '1', // Temperatura
       'fecha': DateTime.now().toIso8601String().split('T').first,
       'hora': DateTime.now().toIso8601String().split('T').last.split('.').first,
       'medicion': data,
@@ -209,8 +210,14 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sensor de Presión'),
-        //backgroundColor: Colors.teal,
+        title: Text(
+          'Sensor de Presión',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Open Sans',
+          ),
+        ),
+        backgroundColor: Color(0xFF3F6BF4),
         actions: [
           IconButton(
             icon: Stack(
@@ -253,7 +260,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Row(
@@ -262,12 +269,22 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
                 ElevatedButton(
                   onPressed: _startDiscovery,
                   child: Text('Actualizar Estado'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFFF0000),
+                    textStyle: TextStyle(
+                      fontFamily: 'Open Sans',
+                    ),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: _closeConnection,
                   child: Text('Cerrar Conexión'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFFF0000),
+                    textStyle: TextStyle(
+                      fontFamily: 'Open Sans',
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -275,24 +292,33 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
             ElevatedButton(
               onPressed: _showDeviceDialog,
               child: Text('Conectar Dispositivo'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF3F6BF4),
+                textStyle: TextStyle(
+                  fontFamily: 'Open Sans',
+                ),
+              ),
             ),
             SizedBox(height: 10),
             Container(
               padding: EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: Colors.teal,
+                color: Color(0xFF1E90FF),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 'Estado Bluetooth: ${_bluetoothState == BluetoothState.STATE_ON ? "Conectado" : "Desconectado"}',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Open Sans',
+                ),
               ),
             ),
             SizedBox(height: 10),
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
+                  padding: EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(10),
@@ -300,10 +326,19 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
                   child: Column(
                     children: _dataList.map((data) {
                       return ListTile(
-                        leading: Icon(Icons.brightness_1, color: Colors.teal),
-                        title: Text(data),
+                        leading:
+                            Icon(Icons.brightness_1, color: Color(0xFF1E90FF)),
+                        title: Text(
+                          data,
+                          style: TextStyle(
+                            fontFamily: 'Open Sans',
+                          ),
+                        ),
                         trailing: Text(
                           "${DateTime.now().hour}:${DateTime.now().minute} h",
+                          style: TextStyle(
+                            fontFamily: 'Open Sans',
+                          ),
                         ),
                       );
                     }).toList(),
