@@ -11,10 +11,15 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  bool _obscureTextPassword = true;
+  bool _obscureTextConfirm = true;
 
   String? _validateUsername(String? value) {
     if (value == null || value.isEmpty) {
       return 'Por favor ingrese su nombre de usuario';
+    }
+    if (value.length < 5) {
+      return 'El nombre de usuario debe tener al menos 5 caracteres';
     }
     return null;
   }
@@ -62,109 +67,122 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset('lib/assets/images/LOGO2.png', height: 150),
-                SizedBox(height: 10),
-                Text(
-                  'Crear Cuenta',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF3F6BF4),
+      body: SingleChildScrollView(
+        // Added to prevent overflow when keyboard is visible
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('lib/assets/images/LOGO22.png', height: 180),
+                  SizedBox(height: 10),
+                  Text(
+                    'Crear Cuenta',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF3F6BF4),
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset('lib/assets/images/01.png',
-                          width: 24, height: 24),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(Icons.person),
+                      ),
+                      labelText: 'Nombre de Usuario',
+                      border: UnderlineInputBorder(),
                     ),
-                    labelText: 'Nombre de Usuario',
-                    border: UnderlineInputBorder(),
+                    validator: _validateUsername,
                   ),
-                  validator: _validateUsername,
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset('lib/assets/images/02.png',
-                          width: 24, height: 24),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(Icons.email),
+                      ),
+                      labelText: 'Correo Electrónico',
+                      border: UnderlineInputBorder(),
                     ),
-                    labelText: 'Correo Electrónico',
-                    border: UnderlineInputBorder(),
+                    validator: _validateEmail,
                   ),
-                  validator: _validateEmail,
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset('lib/assets/images/03.png',
-                          width: 24, height: 24),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: _obscureTextPassword,
+                    decoration: InputDecoration(
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(Icons.lock),
+                      ),
+                      labelText: 'Contraseña',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureTextPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureTextPassword = !_obscureTextPassword;
+                          });
+                        },
+                      ),
+                      border: UnderlineInputBorder(),
                     ),
-                    labelText: 'Contraseña',
-                    suffixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset('lib/assets/images/04.png',
-                          width: 24, height: 24),
-                    ),
-                    border: UnderlineInputBorder(),
+                    validator: _validatePassword,
                   ),
-                  validator: _validatePassword,
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset('lib/assets/images/03.png',
-                          width: 24, height: 24),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: _obscureTextConfirm,
+                    decoration: InputDecoration(
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(Icons.lock),
+                      ),
+                      labelText: 'Repetir Contraseña',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureTextConfirm
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureTextConfirm = !_obscureTextConfirm;
+                          });
+                        },
+                      ),
+                      border: UnderlineInputBorder(),
                     ),
-                    labelText: 'Repetir Contraseña',
-                    suffixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset('lib/assets/images/04.png',
-                          width: 24, height: 24),
-                    ),
-                    border: UnderlineInputBorder(),
+                    validator: _validateConfirmPassword,
                   ),
-                  validator: _validateConfirmPassword,
-                ),
-                SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _register,
-                    child: Text('Registrar', style: TextStyle(fontSize: 18)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF3F6BF4),
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                  SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _register,
+                      child: Text('Registrar', style: TextStyle(fontSize: 18)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF3F6BF4),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

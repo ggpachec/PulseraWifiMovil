@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class ForgotPasswordScreen extends StatefulWidget {
   @override
@@ -21,12 +22,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return null;
   }
 
-  void _resetPassword() {
-    if (_formKey.currentState?.validate() ?? false) {
-      // Procesar la recuperación de contraseña
-      // Aquí puedes añadir la lógica para enviar la solicitud de recuperación de contraseña
+  Future<void> _sendPasswordResetEmail(String email) async {
+    // Reemplaza esta URL con el endpoint de tu backend
+    final url = Uri.parse('https://your-backend-url.com/password-reset');
 
-      // Mostrar un diálogo de éxito y redirigir al inicio de sesión
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: '{"email": "$email"}',
+    );
+
+    if (response.statusCode == 200) {
+      // La solicitud fue exitosa
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -45,6 +52,33 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           );
         },
       );
+    } else {
+      // La solicitud falló
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text(
+                'Hubo un error al enviar la solicitud. Inténtalo de nuevo.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Aceptar'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _resetPassword() {
+    if (_formKey.currentState?.validate() ?? false) {
+      final email = _emailController.text;
+      _sendPasswordResetEmail(email);
     }
   }
 
@@ -52,56 +86,58 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.lock_reset, size: 100, color: Colors.black),
-                SizedBox(height: 20),
-                Text(
-                  'Recuperar Contraseña',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF3F6BF4),
-                  ),
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Image.asset('lib/assets/images/02.png',
-                          width: 24, height: 24),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('lib/assets/images/candadopassword.png',
+                      height: 100),
+                  SizedBox(height: 20),
+                  Text(
+                    'Recuperar Contraseña',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF3F6BF4),
                     ),
-                    labelText: 'Correo Electrónico',
-                    border: UnderlineInputBorder(),
                   ),
-                  validator: _validateEmail,
-                ),
-                SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _resetPassword,
-                    child: Text('Enviar Solicitud',
-                        style: TextStyle(fontSize: 18)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Icon(Icons.email),
+                      ),
+                      labelText: 'Correo Electrónico',
+                      border: UnderlineInputBorder(),
+                    ),
+                    validator: _validateEmail,
+                  ),
+                  SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _resetPassword,
+                      child: Text('Enviar Solicitud',
+                          style: TextStyle(fontSize: 18)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
