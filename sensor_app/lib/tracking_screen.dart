@@ -111,14 +111,14 @@ class _TrackingSensorScreenState extends State<TrackingScreen> {
                         onPressed: _isTracking ? null : _startTracking,
                         child: Text('Comenzar seguimiento'),
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.green, // Ajusta el color
+                          backgroundColor: Colors.green, // Ajusta el color
                         ),
                       ),
                       ElevatedButton(
                         onPressed: _isTracking ? _stopTracking : null,
                         child: Text('Parar seguimiento'),
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.red, // Ajusta el color
+                          backgroundColor: Colors.red, // Ajusta el color
                         ),
                       ),
                     ],
