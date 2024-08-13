@@ -2,6 +2,10 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:sensor_app/alertas.dart';
+import 'package:sensor_app/configuracion.dart';
+import 'package:sensor_app/sensors.dart';
 import 'api_service.dart';
 
 class TemperatureSensorScreen extends StatefulWidget {
@@ -25,9 +29,30 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
   bool _isDiscovering = false;
   String _buffer = '';
 
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    SensorsScreen(),
+    CalendarScreen(),
+    AlertsScreen(),
+    GeneralSettingsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    // Navegar a la página seleccionada
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => _pages[index]),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    _requestPermissions();
     _bluetooth.state.then((state) {
       setState(() {
         _bluetoothState = state;
@@ -51,6 +76,24 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
 
     if (_bluetoothState == BluetoothState.STATE_ON) {
       _startDiscovery();
+    }
+  }
+
+  Future<void> _requestPermissions() async {
+    // Solicita los permisos necesarios para Bluetooth
+    PermissionStatus bluetoothStatus = await Permission.bluetooth.request();
+    PermissionStatus bluetoothScanStatus = await Permission.bluetoothScan.request();
+    PermissionStatus bluetoothConnectStatus = await Permission.bluetoothConnect.request();
+
+    // Comprueba si se concedieron los permisos
+    if (bluetoothStatus.isGranted &&
+        bluetoothScanStatus.isGranted &&
+        bluetoothConnectStatus.isGranted) {
+      // Los permisos se concedieron, puedes proceder
+      print("Permisos de Bluetooth concedidos.");
+    } else {
+      // Los permisos no se concedieron, maneja el caso aquí
+      print("Permisos de Bluetooth no concedidos.");
     }
   }
 
@@ -326,3 +369,15 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     super.dispose();
   }
 }
+
+// Define las pantallas a las que quieres navegar
+
+class CalendarScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(child: Text('Calendar Screen')),
+    );
+  }
+}
+

@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:sensor_app/alertas.dart';
+import 'package:sensor_app/configuracion.dart';
+import 'package:sensor_app/sensors.dart';
 import 'api_service.dart';
 
 class PressureSensorScreen extends StatefulWidget {
@@ -24,6 +27,26 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
   List<String> _dataList = [];
   bool _isDiscovering = false;
   String _buffer = '';
+
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    SensorsScreen(),
+    CalendarScreen(),
+    AlertsScreen(),
+    GeneralSettingsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    // Navegar a la página seleccionada
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => _pages[index]),
+    );
+  }
 
   @override
   void initState() {
@@ -358,3 +381,15 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
     super.dispose();
   }
 }
+
+// Define las pantallas a las que quieres navegar
+
+class CalendarScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(child: Text('Calendar Screen')),
+    );
+  }
+}
+

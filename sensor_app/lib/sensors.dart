@@ -11,10 +11,10 @@ class _SensorsScreenState extends State<SensorsScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    HomeScreen(),
+    SensorsScreen(),
     CalendarScreen(),
-    NotificationsScreen(),
-    ProfileScreen(),
+    AlertsScreen(),
+    GeneralSettingsScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -31,7 +31,6 @@ class _SensorsScreenState extends State<SensorsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -45,6 +44,7 @@ class _SensorsScreenState extends State<SensorsScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
+              backgroundColor: Colors.white,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(height: 20),
@@ -104,12 +104,13 @@ class _SensorsScreenState extends State<SensorsScreen> {
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
+            topLeft: Radius.circular(0),
+            topRight: Radius.circular(0),
           ),
         ),
         child: BottomNavigationBar(
           backgroundColor: Colors.transparent,
+          elevation: 0,
           items: [
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('lib/assets/images/12.png')),
@@ -132,6 +133,7 @@ class _SensorsScreenState extends State<SensorsScreen> {
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.black,
           onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
         ),
       ),
     );
@@ -166,38 +168,12 @@ class _SensorsScreenState extends State<SensorsScreen> {
 }
 
 // Define las pantallas a las que quieres navegar
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Home Screen')),
-    );
-  }
-}
 
 class CalendarScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(child: Text('Calendar Screen')),
-    );
-  }
-}
-
-class NotificationsScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Notifications Screen')),
-    );
-  }
-}
-
-class ProfileScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Profile Screen')),
     );
   }
 }

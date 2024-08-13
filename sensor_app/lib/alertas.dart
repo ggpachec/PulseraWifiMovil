@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sensor_app/configuracion.dart';
+import 'package:sensor_app/sensors.dart';
 
 class AlertsScreen extends StatefulWidget {
   @override
@@ -42,6 +44,26 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
   List<Map<String, String>> get _filteredAlerts {
     return _alerts.where((alert) => alert['type'] == _selectedFilter).toList();
+  }
+
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    SensorsScreen(),
+    CalendarScreen(),
+    AlertsScreen(),
+    GeneralSettingsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    // Navegar a la página seleccionada
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => _pages[index]),
+    );
   }
 
   @override
@@ -162,9 +184,10 @@ class _AlertsScreenState extends State<AlertsScreen> {
               label: 'Perfil',
             ),
           ],
-          currentIndex: 2,
+          currentIndex: _selectedIndex,
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.black,
+          onTap: _onItemTapped,
           type: BottomNavigationBarType.fixed,
         ),
       ),
@@ -198,3 +221,15 @@ class _AlertsScreenState extends State<AlertsScreen> {
     );
   }
 }
+
+// Define las pantallas a las que quieres navegar
+
+class CalendarScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(child: Text('Calendar Screen')),
+    );
+  }
+}
+
