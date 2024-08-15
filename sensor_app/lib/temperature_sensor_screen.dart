@@ -16,12 +16,12 @@ class TemperatureSensorScreen extends StatefulWidget {
 }
 
 class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
-  // Add a counter
+  // Agrega un contador
   int _recordCounter = 0;
   final int _recordThreshold =
-      25; // Change to the number of records you want to skip
+      25; // Cambia a la cantidad de registros que deseas saltarte
 
-  final ApiService apiService = ApiService(); // Instance of ApiService
+  final ApiService apiService = ApiService(); // Instancia de ApiService
   FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
   List<BluetoothDevice> _devicesList = [];
@@ -44,7 +44,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    // Navigate to the selected page
+    // Navegar a la página seleccionada
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => _pages[index]),
@@ -85,15 +85,15 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Bluetooth is not turned on'),
-          content: Text('Please turn on Bluetooth to continue.'),
+          title: Text('Bluetooth no está encendido'),
+          content: Text('Por favor, encienda el Bluetooth para continuar.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _bluetooth.requestEnable();
               },
-              child: Text('Turn on Bluetooth'),
+              child: Text('Encender Bluetooth'),
             ),
           ],
         );
@@ -124,11 +124,11 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
   Future<void> _connectToDevice(BluetoothDevice device) async {
     try {
       _connection = await BluetoothConnection.toAddress(device.address);
-      print('Connected to the device ${device.name}');
+      print('Conectado al dispositivo ${device.name}');
 
       _connection!.input?.listen((Uint8List data) {
         final receivedData = String.fromCharCodes(data);
-        print('Data received: $receivedData');
+        print('Data recibida: $receivedData');
         setState(() {
           _buffer += receivedData;
           int index;
@@ -137,44 +137,43 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
             _buffer = _buffer.substring(index + 1);
             if (line.isNotEmpty) {
               _dataList.add(line);
-              _sendDataToApi(
-                  double.parse(line.split('=')[1])); // Send data to API
+              _sendDataToApi(line);
             }
           }
         });
       });
     } catch (e) {
-      print('Error connecting: $e');
+      print('Error al conectar: $e');
     }
   }
 
-  Future<void> _sendDataToApi(double data) async {
+  Future<void> _sendDataToApi(String data) async {
     final id = await AuthService.getPatient();
     Map<String, dynamic> newData = {
       "fecha": DateTime.now().toIso8601String().split('T').first,
       "hora": DateTime.now().toIso8601String().split('T').last.split('.').first,
       "medicion": data,
-      "servicio": 5, // Temperature
+      "servicio": 1, // Presion
       "paciente": id['id']
     };
 
     try {
-      // Increment the counter
+      // Incrementa el contador
       _recordCounter++;
 
-      // Save only when the counter reaches the threshold
+      // Solo guarda cuando el contador alcanza el umbral
       if (_recordCounter >= _recordThreshold) {
         await apiService.createData('detalleServicio', newData);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Data sent successfully')),
+          SnackBar(content: Text('Datos enviados exitosamente')),
         );
 
-        // Reset the counter
+        // Reinicia el contador
         _recordCounter = 0;
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error sending data: $e')),
+        SnackBar(content: Text('Error al enviar datos: $e')),
       );
     }
   }
@@ -196,7 +195,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Devices found...'),
+              title: Text('Dispositivos encontrados...'),
               content: Container(
                 width: double.minPositive,
                 child: LimitedBox(
@@ -225,7 +224,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Cancel'),
+                  child: Text('Cancelar'),
                 ),
               ],
             );
@@ -240,7 +239,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Temperature Sensor',
+          'Sensor de Presión',
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Open Sans',
@@ -297,7 +296,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
               children: [
                 ElevatedButton(
                   onPressed: _startDiscovery,
-                  child: Text('Update Status'),
+                  child: Text('Actualizar Estado'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFFF0000),
                     textStyle: TextStyle(
@@ -307,7 +306,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
                 ),
                 ElevatedButton(
                   onPressed: _closeConnection,
-                  child: Text('Close Connection'),
+                  child: Text('Cerrar Conexión'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFFF0000),
                     textStyle: TextStyle(
@@ -320,7 +319,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: _showDeviceDialog,
-              child: Text('Connect Device'),
+              child: Text('Conectar Dispositivo'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF3F6BF4),
                 textStyle: TextStyle(
@@ -336,7 +335,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                'Bluetooth Status: ${_bluetoothState == BluetoothState.STATE_ON ? "Connected" : "Disconnected"}',
+                'Estado Bluetooth: ${_bluetoothState == BluetoothState.STATE_ON ? "Conectado" : "Desconectado"}',
                 style: TextStyle(
                   color: Colors.white,
                   fontFamily: 'Open Sans',
@@ -400,15 +399,15 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('lib/assets/images/20.png')),
-              label: 'Limits',
+              label: 'Limites',
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
-              label: 'Notifications',
+              label: 'Notificaciones',
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('lib/assets/images/15.png')),
-              label: 'Profile',
+              label: 'Perfil',
             ),
           ],
           currentIndex: _selectedIndex,
@@ -423,7 +422,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
 
   @override
   void dispose() {
-    _connection?.dispose(); // Ensure the connection is closed properly
+    _connection?.dispose(); // Asegura que la conexión se cierre correctamente
     super.dispose();
   }
 }
