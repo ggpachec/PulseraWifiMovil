@@ -17,10 +17,9 @@ class TemperatureSensorScreen extends StatefulWidget {
 class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
   // Agrega un contador
   int _recordCounter = 0;
-  final int _recordThreshold =
-      25; // Cambia a la cantidad de registros que deseas saltarte
+  final int _recordThreshold = 25;  // Cambia a la cantidad de registros que deseas saltarte
 
-  final ApiService apiService = ApiService(); // Instancia de ApiService
+  final ApiService apiService = ApiService();  // Instancia de ApiService
   FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
   List<BluetoothDevice> _devicesList = [];
@@ -83,10 +82,8 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
   Future<void> _requestPermissions() async {
     // Solicita los permisos necesarios para Bluetooth
     PermissionStatus bluetoothStatus = await Permission.bluetooth.request();
-    PermissionStatus bluetoothScanStatus =
-        await Permission.bluetoothScan.request();
-    PermissionStatus bluetoothConnectStatus =
-        await Permission.bluetoothConnect.request();
+    PermissionStatus bluetoothScanStatus = await Permission.bluetoothScan.request();
+    PermissionStatus bluetoothConnectStatus = await Permission.bluetoothConnect.request();
 
     // Comprueba si se concedieron los permisos
     if (bluetoothStatus.isGranted &&
@@ -157,7 +154,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
             _buffer = _buffer.substring(index + 1);
             if (line.isNotEmpty) {
               _dataList.add(line);
-              _sendDataToApi(line); // Enviar datos a la API
+              _sendDataToApi(line);  // Enviar datos a la API
             }
           }
         });
@@ -167,9 +164,10 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     }
   }
 
+
   Future<void> _sendDataToApi(String data) async {
     Map<String, dynamic> newData = {
-      'servicio': '5', // Temperatura
+      'servicio': '5',  // Temperatura
       'fecha': DateTime.now().toIso8601String().split('T').first,
       'hora': DateTime.now().toIso8601String().split('T').last.split('.').first,
       'medicion': data,
@@ -190,11 +188,12 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
         _recordCounter = 0;
       }
     } catch (e) {
-      //ScaffoldMessenger.of(context).showSnackBar(
-      //SnackBar(content: Text('Error al enviar datos: $e')),
-      //);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al enviar datos: $e')),
+      );
     }
   }
+
 
   Future<void> _closeConnection() async {
     await _connection?.close();
@@ -381,3 +380,4 @@ class CalendarScreen extends StatelessWidget {
     );
   }
 }
+

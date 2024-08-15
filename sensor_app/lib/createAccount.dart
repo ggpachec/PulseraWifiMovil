@@ -63,7 +63,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     //   Navigator.pushReplacementNamed(context, '/login');
     // }
 
-    /*try {
+    try {
       await apiService.registerUser(
         _usernameController.text,
         _emailController.text,
@@ -77,7 +77,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al registrar: $e')),
       );
-    }*/
+    }
   }
 
   @override
