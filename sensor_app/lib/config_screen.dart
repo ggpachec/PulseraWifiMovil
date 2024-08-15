@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'api_service.dart';
 
 class LimitsConfigScreen extends StatefulWidget {
   @override
@@ -6,6 +7,8 @@ class LimitsConfigScreen extends StatefulWidget {
 }
 
 class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
+  final ApiService apiService = ApiService();  // Instancia de ApiService
+
   double minPressure = 60.0;
   double maxPressure = 120.0;
   RangeValues pressureRange = RangeValues(60, 90);
@@ -21,6 +24,51 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
   double minHeartRate = 60.0;
   double maxHeartRate = 120.0;
   double heartRateValue = 80.0;
+
+  Future<void> _saveLimits() async {
+    List<Map<String, dynamic>> limitsData = [
+      {
+        "umbral_minimo": minPressure,
+        "umbral_maximo": maxPressure,
+        "servicio": 1, // ID del servicio para presión
+        "paciente": 1 //esto se cambia dependiendo del paciente que hace login
+      },
+      {
+        "umbral_minimo": minSaturation,
+        "umbral_maximo": maxSaturation,
+        "servicio": 2, // ID del servicio para saturación
+        "paciente": 1 //esto se cambia dependiendo del paciente que hace login
+      },
+      {
+        "umbral_minimo": minTemperature,
+        "umbral_maximo": maxTemperature,
+        "servicio": 5, // ID del servicio para temperatura
+        "paciente": 1 //esto se cambia dependiendo del paciente que hace login
+      },
+      {
+        "umbral_minimo": minHeartRate,
+        "umbral_maximo": maxHeartRate,
+        "servicio": 4, // ID del servicio para frecuencia cardíaca
+        "paciente": 1 //esto se cambia dependiendo del paciente que hace login
+      },
+    ];
+
+    try {
+      //await apiService.updateData('limits', 1, data); // Actualiza el ID según sea necesario
+      // IDs correspondientes a cada servicio
+      for (var limit in limitsData) {
+        await apiService.createData('historial-umbrales', limit);
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Límites guardados exitosamente')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al guardar límites: $e')),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +139,7 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
             ),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: _saveLimits,
                 child: Text('Guardar'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor:

@@ -58,9 +58,25 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   }
 
   void _register() {
-    if (_formKey.currentState?.validate() ?? false) {
-      // Procesar el registro
+    // if (_formKey.currentState?.validate() ?? false) {
+    //   // Procesar el registro
+    //   Navigator.pushReplacementNamed(context, '/login');
+    // }
+
+    try {
+      await apiService.registerUser(
+        _usernameController.text,
+        _emailController.text,
+        _passwordController.text,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registro exitoso')),
+      );
       Navigator.pushReplacementNamed(context, '/login');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al registrar: $e')),
+      );
     }
   }
 

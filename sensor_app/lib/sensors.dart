@@ -44,10 +44,9 @@ class _SensorsScreenState extends State<SensorsScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
-              backgroundColor: Colors.white,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 Image.asset('lib/assets/images/21.png', height: 120),
                 SizedBox(height: 10),
                 Text(

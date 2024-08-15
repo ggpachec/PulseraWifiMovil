@@ -179,7 +179,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
 
       // Solo guarda cuando el contador alcanza el umbral
       if (_recordCounter >= _recordThreshold) {
-        await apiService.createData(newData);
+        await apiService.createData('detalleServicio', newData);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Datos enviados exitosamente')),
         );
