@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:sensor_app/alertas.dart';
 import 'package:sensor_app/auth_service.dart';
+import 'package:sensor_app/config_screen.dart';
 import 'package:sensor_app/configuracion.dart';
 import 'package:sensor_app/sensors.dart';
 import 'api_service.dart';
@@ -33,7 +34,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
 
   final List<Widget> _pages = [
     SensorsScreen(),
-    CalendarScreen(),
+    LimitsConfigScreen(),
     AlertsScreen(),
     GeneralSettingsScreen(),
   ];

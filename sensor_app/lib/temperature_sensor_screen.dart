@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:ffi';
+import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
@@ -169,8 +172,9 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
             String line = _buffer.substring(0, index).trim();
             _buffer = _buffer.substring(index + 1);
             if (line.isNotEmpty) {
+              line.split(" ");
               _dataList.add(line);
-              _sendDataToApi(line); // Enviar datos a la API
+              _sendDataToApi(double.parse(line[1])); // Enviar datos a la API
             }
           }
         });
@@ -180,21 +184,14 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     }
   }
 
-  Future<void> _sendDataToApi(String data) async {
+  Future<void> _sendDataToApi(double data) async {
     final id = await AuthService.getPatient();
     Map<String, dynamic> newData = {
-<<<<<<< Updated upstream
-      'servicio': '5', // Temperatura
-      'fecha': DateTime.now().toIso8601String().split('T').first,
-      'hora': DateTime.now().toIso8601String().split('T').last.split('.').first,
-      'medicion': data,
-=======
       "fecha": DateTime.now().toIso8601String().split('T').first,
       "hora": DateTime.now().toIso8601String().split('T').last.split('.').first,
       "medicion": data,
       "servicio": 5,    // Temperatura
       "paciente": id['id']
->>>>>>> Stashed changes
     };
 
     try {
@@ -442,17 +439,3 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
   }
 }
 
-<<<<<<< Updated upstream
-// Define las pantallas a las que quieres navegar
-
-class CalendarScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Calendar Screen')),
-    );
-  }
-}
-=======
-
->>>>>>> Stashed changes
