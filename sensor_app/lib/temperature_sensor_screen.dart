@@ -1,11 +1,7 @@
 import 'dart:async';
-import 'dart:collection';
-import 'dart:ffi';
-import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:sensor_app/alertas.dart';
 import 'package:sensor_app/auth_service.dart';
 import 'package:sensor_app/config_screen.dart';
@@ -13,13 +9,12 @@ import 'package:sensor_app/configuracion.dart';
 import 'package:sensor_app/sensors.dart';
 import 'api_service.dart';
 
-class TemperatureSensorScreen extends StatefulWidget {
+class PressureSensorScreen extends StatefulWidget {
   @override
-  _TemperatureSensorScreenState createState() =>
-      _TemperatureSensorScreenState();
+  _PressureSensorScreenState createState() => _PressureSensorScreenState();
 }
 
-class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
+class _PressureSensorScreenState extends State<PressureSensorScreen> {
   // Agrega un contador
   int _recordCounter = 0;
   final int _recordThreshold =
@@ -58,7 +53,6 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
   @override
   void initState() {
     super.initState();
-    _requestPermissions();
     _bluetooth.state.then((state) {
       setState(() {
         _bluetoothState = state;
@@ -82,26 +76,6 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
 
     if (_bluetoothState == BluetoothState.STATE_ON) {
       _startDiscovery();
-    }
-  }
-
-  Future<void> _requestPermissions() async {
-    // Solicita los permisos necesarios para Bluetooth
-    PermissionStatus bluetoothStatus = await Permission.bluetooth.request();
-    PermissionStatus bluetoothScanStatus =
-        await Permission.bluetoothScan.request();
-    PermissionStatus bluetoothConnectStatus =
-        await Permission.bluetoothConnect.request();
-
-    // Comprueba si se concedieron los permisos
-    if (bluetoothStatus.isGranted &&
-        bluetoothScanStatus.isGranted &&
-        bluetoothConnectStatus.isGranted) {
-      // Los permisos se concedieron, puedes proceder
-      print("Permisos de Bluetooth concedidos.");
-    } else {
-      // Los permisos no se concedieron, maneja el caso aquí
-      print("Permisos de Bluetooth no concedidos.");
     }
   }
 
@@ -132,25 +106,14 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
       _devicesList.clear();
     });
 
-    StreamSubscription<BluetoothDiscoveryResult>? subscription;
-    subscription = _bluetooth.startDiscovery().listen((r) {
+    _bluetooth.startDiscovery().listen((r) {
       setState(() {
         final device = r.device;
         if (!_devicesList.any((d) => d.address == device.address)) {
           _devicesList.add(device);
         }
       });
-
-      // Detener la búsqueda después de encontrar 3 dispositivos
-      if (_devicesList.length >= 3) {
-        subscription?.cancel();
-        setState(() {
-          _isDiscovering = false;
-        });
-      }
-    });
-
-    subscription.onDone(() {
+    }).onDone(() {
       setState(() {
         _isDiscovering = false;
       });
@@ -172,9 +135,8 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
             String line = _buffer.substring(0, index).trim();
             _buffer = _buffer.substring(index + 1);
             if (line.isNotEmpty) {
-              line.split(" ");
               _dataList.add(line);
-              _sendDataToApi(double.parse(line[1])); // Enviar datos a la API
+              _sendDataToApi(line);
             }
           }
         });
@@ -184,13 +146,13 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     }
   }
 
-  Future<void> _sendDataToApi(double data) async {
+  Future<void> _sendDataToApi(String data) async {
     final id = await AuthService.getPatient();
     Map<String, dynamic> newData = {
       "fecha": DateTime.now().toIso8601String().split('T').first,
       "hora": DateTime.now().toIso8601String().split('T').last.split('.').first,
       "medicion": data,
-      "servicio": 5,    // Temperatura
+      "servicio": 1, // Presion
       "paciente": id['id']
     };
 
@@ -209,9 +171,9 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
         _recordCounter = 0;
       }
     } catch (e) {
-      /*ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al enviar datos: $e')),
-      );*/
+      );
     }
   }
 
@@ -237,7 +199,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
                 width: double.minPositive,
                 child: LimitedBox(
                   maxHeight: 200,
-                  child: _isDiscovering && _devicesList.isEmpty
+                  child: _isDiscovering
                       ? Center(child: CircularProgressIndicator())
                       : ListView.builder(
                           shrinkWrap: true,
@@ -271,19 +233,18 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     );
   }
 
-
-  void _startDiscoveryAndShowDialog() {
-    _devicesList.clear();  // Limpiar la lista de dispositivos antes de comenzar
-    _showDeviceDialog();   // Mostrar el diálogo primero
-    _startDiscovery();     // Iniciar la búsqueda de dispositivos
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sensor de Temperatura'),
-        foregroundColor: Colors.teal,
+        title: Text(
+          'Sensor de Presión',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Open Sans',
+          ),
+        ),
+        backgroundColor: Color(0xFF3F6BF4),
         actions: [
           IconButton(
             icon: Stack(
@@ -326,48 +287,65 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // ElevatedButton(
-                //   onPressed: _startDiscovery,
-                //   child: Text('Actualizar Estado'),
-                //   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                // ),
+                ElevatedButton(
+                  onPressed: _startDiscovery,
+                  child: Text('Actualizar Estado'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFFF0000),
+                    textStyle: TextStyle(
+                      fontFamily: 'Open Sans',
+                    ),
+                  ),
+                ),
                 ElevatedButton(
                   onPressed: _closeConnection,
                   child: Text('Cerrar Conexión'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFFF0000),
+                    textStyle: TextStyle(
+                      fontFamily: 'Open Sans',
+                    ),
+                  ),
                 ),
               ],
             ),
             SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () {
-                _startDiscoveryAndShowDialog();  // Inicia la búsqueda y muestra el diálogo
-              },
+              onPressed: _showDeviceDialog,
               child: Text('Conectar Dispositivo'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF3F6BF4),
+                textStyle: TextStyle(
+                  fontFamily: 'Open Sans',
+                ),
+              ),
             ),
             SizedBox(height: 10),
             Container(
               padding: EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: Colors.teal,
+                color: Color(0xFF1E90FF),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 'Estado Bluetooth: ${_bluetoothState == BluetoothState.STATE_ON ? "Conectado" : "Desconectado"}',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Open Sans',
+                ),
               ),
             ),
             SizedBox(height: 10),
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
+                  padding: EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(10),
@@ -375,10 +353,19 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
                   child: Column(
                     children: _dataList.map((data) {
                       return ListTile(
-                        leading: Icon(Icons.brightness_1, color: Colors.teal),
-                        title: Text(data),
+                        leading:
+                            Icon(Icons.brightness_1, color: Color(0xFF1E90FF)),
+                        title: Text(
+                          data,
+                          style: TextStyle(
+                            fontFamily: 'Open Sans',
+                          ),
+                        ),
                         trailing: Text(
                           "${DateTime.now().hour}:${DateTime.now().minute} h",
+                          style: TextStyle(
+                            fontFamily: 'Open Sans',
+                          ),
                         ),
                       );
                     }).toList(),
@@ -438,4 +425,3 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     super.dispose();
   }
 }
-
