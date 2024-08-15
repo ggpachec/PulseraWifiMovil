@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'route_history_screen.dart';
 
 class TrackingScreen extends StatefulWidget {
   @override
@@ -13,6 +12,8 @@ class _TrackingSensorScreenState extends State<TrackingScreen> {
   Position? _currentPosition;
   bool _isTracking = false;
   List<LatLng> _route = [];
+  Set<Marker> _markers = {};
+  Set<Circle> _circles = {};
 
   @override
   void initState() {
@@ -25,7 +26,67 @@ class _TrackingSensorScreenState extends State<TrackingScreen> {
         desiredAccuracy: LocationAccuracy.high);
     setState(() {
       _currentPosition = position;
+
+      // Añadimos marcadores de lugares clave
+      _addKeyLocations();
+
+      // Añadimos los cercos a los lugares clave
+      _addGeofences();
     });
+  }
+
+  void _addKeyLocations() {
+    // Lugares clave
+    LatLng homeLocation = LatLng(-2.147856, -79.964593); // Ejemplo: hogar
+    LatLng centerLocation = LatLng(-2.189402, -79.889067); // Ejemplo: centro
+
+    // Marcadores
+    _markers.add(Marker(
+      markerId: MarkerId('homeLocation'),
+      position: homeLocation,
+      infoWindow: InfoWindow(title: 'Hogar'),
+    ));
+
+    _markers.add(Marker(
+      markerId: MarkerId('centerLocation'),
+      position: centerLocation,
+      infoWindow: InfoWindow(title: 'Centro de la Ciudad'),
+    ));
+
+    // Ruta inicial (ESPOCH -> Centro)
+    _route.add(LatLng(-2.146640, -79.967113)); // ESPOCH
+    _route.add(centerLocation); // Centro
+  }
+
+  void _addGeofences() {
+    // Cercos alrededor de los lugares clave
+    _circles.add(Circle(
+      circleId: CircleId('homeGeofence'),
+      center: LatLng(-2.147856, -79.964593),
+      radius: 100, // 100 metros de radio
+      fillColor: Colors.orange.withOpacity(0.3),
+      strokeColor: Colors.orange,
+      strokeWidth: 2,
+    ));
+
+    _circles.add(Circle(
+      circleId: CircleId('centerGeofence'),
+      center: LatLng(-2.189402, -79.889067),
+      radius: 100, // 100 metros de radio
+      fillColor: Colors.orange.withOpacity(0.3),
+      strokeColor: Colors.orange,
+      strokeWidth: 2,
+    ));
+
+    // Cerco alrededor de la ruta general
+    _circles.add(Circle(
+      circleId: CircleId('routeGeofence'),
+      center: LatLng(-2.1683, -79.9267), // Centro aproximado entre los puntos
+      radius: 2000, // 2 km de radio
+      fillColor: Colors.blue.withOpacity(0.2),
+      strokeColor: Colors.blue,
+      strokeWidth: 1,
+    ));
   }
 
   void _startTracking() {
@@ -111,14 +172,14 @@ class _TrackingSensorScreenState extends State<TrackingScreen> {
                         onPressed: _isTracking ? null : _startTracking,
                         child: Text('Comenzar seguimiento'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green, // Ajusta el color
+                          backgroundColor: Colors.green,
                         ),
                       ),
                       ElevatedButton(
                         onPressed: _isTracking ? _stopTracking : null,
                         child: Text('Parar seguimiento'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red, // Ajusta el color
+                          backgroundColor: Colors.red,
                         ),
                       ),
                     ],
@@ -132,13 +193,8 @@ class _TrackingSensorScreenState extends State<TrackingScreen> {
                           _currentPosition!.longitude),
                       zoom: 15,
                     ),
-                    markers: {
-                      Marker(
-                        markerId: MarkerId('currentLocation'),
-                        position: LatLng(_currentPosition!.latitude,
-                            _currentPosition!.longitude),
-                      ),
-                    },
+                    markers: _markers,
+                    circles: _circles,
                     polylines: {
                       Polyline(
                         polylineId: PolylineId('route'),
