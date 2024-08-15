@@ -50,7 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _login() async {
     if (_formKey.currentState?.validate() ?? false) {
-      try {
+      Navigator.pushReplacementNamed(context, '/sensors');
+      /*try {
         String token = await apiService.loginUser(
           _usernameController.text,
           _passwordController.text,
@@ -64,10 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al iniciar sesión: $e')),
         );
-      }
+      }*/
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
