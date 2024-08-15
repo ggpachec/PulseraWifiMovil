@@ -9,18 +9,19 @@ import 'package:sensor_app/configuracion.dart';
 import 'package:sensor_app/sensors.dart';
 import 'api_service.dart';
 
-class PressureSensorScreen extends StatefulWidget {
+class TemperatureSensorScreen extends StatefulWidget {
   @override
-  _PressureSensorScreenState createState() => _PressureSensorScreenState();
+  _TemperatureSensorScreenState createState() =>
+      _TemperatureSensorScreenState();
 }
 
-class _PressureSensorScreenState extends State<PressureSensorScreen> {
-  // Agrega un contador
+class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
+  // Add a counter
   int _recordCounter = 0;
   final int _recordThreshold =
-      25; // Cambia a la cantidad de registros que deseas saltarte
+      25; // Change to the number of records you want to skip
 
-  final ApiService apiService = ApiService(); // Instancia de ApiService
+  final ApiService apiService = ApiService(); // Instance of ApiService
   FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
   List<BluetoothDevice> _devicesList = [];
@@ -43,7 +44,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    // Navegar a la página seleccionada
+    // Navigate to the selected page
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => _pages[index]),
@@ -84,15 +85,15 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Bluetooth no está encendido'),
-          content: Text('Por favor, encienda el Bluetooth para continuar.'),
+          title: Text('Bluetooth is not turned on'),
+          content: Text('Please turn on Bluetooth to continue.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _bluetooth.requestEnable();
               },
-              child: Text('Encender Bluetooth'),
+              child: Text('Turn on Bluetooth'),
             ),
           ],
         );
@@ -123,11 +124,11 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
   Future<void> _connectToDevice(BluetoothDevice device) async {
     try {
       _connection = await BluetoothConnection.toAddress(device.address);
-      print('Conectado al dispositivo ${device.name}');
+      print('Connected to the device ${device.name}');
 
       _connection!.input?.listen((Uint8List data) {
         final receivedData = String.fromCharCodes(data);
-        print('Data recibida: $receivedData');
+        print('Data received: $receivedData');
         setState(() {
           _buffer += receivedData;
           int index;
@@ -136,43 +137,44 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
             _buffer = _buffer.substring(index + 1);
             if (line.isNotEmpty) {
               _dataList.add(line);
-              _sendDataToApi(line);
+              _sendDataToApi(
+                  double.parse(line.split('=')[1])); // Send data to API
             }
           }
         });
       });
     } catch (e) {
-      print('Error al conectar: $e');
+      print('Error connecting: $e');
     }
   }
 
-  Future<void> _sendDataToApi(String data) async {
+  Future<void> _sendDataToApi(double data) async {
     final id = await AuthService.getPatient();
     Map<String, dynamic> newData = {
       "fecha": DateTime.now().toIso8601String().split('T').first,
       "hora": DateTime.now().toIso8601String().split('T').last.split('.').first,
       "medicion": data,
-      "servicio": 1, // Presion
+      "servicio": 5, // Temperature
       "paciente": id['id']
     };
 
     try {
-      // Incrementa el contador
+      // Increment the counter
       _recordCounter++;
 
-      // Solo guarda cuando el contador alcanza el umbral
+      // Save only when the counter reaches the threshold
       if (_recordCounter >= _recordThreshold) {
         await apiService.createData('detalleServicio', newData);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Datos enviados exitosamente')),
+          SnackBar(content: Text('Data sent successfully')),
         );
 
-        // Reinicia el contador
+        // Reset the counter
         _recordCounter = 0;
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al enviar datos: $e')),
+        SnackBar(content: Text('Error sending data: $e')),
       );
     }
   }
@@ -194,7 +196,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Dispositivos encontrados...'),
+              title: Text('Devices found...'),
               content: Container(
                 width: double.minPositive,
                 child: LimitedBox(
@@ -223,7 +225,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Cancelar'),
+                  child: Text('Cancel'),
                 ),
               ],
             );
@@ -238,7 +240,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Sensor de Presión',
+          'Temperature Sensor',
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Open Sans',
@@ -295,7 +297,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
               children: [
                 ElevatedButton(
                   onPressed: _startDiscovery,
-                  child: Text('Actualizar Estado'),
+                  child: Text('Update Status'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFFF0000),
                     textStyle: TextStyle(
@@ -305,7 +307,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
                 ),
                 ElevatedButton(
                   onPressed: _closeConnection,
-                  child: Text('Cerrar Conexión'),
+                  child: Text('Close Connection'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFFF0000),
                     textStyle: TextStyle(
@@ -318,7 +320,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: _showDeviceDialog,
-              child: Text('Conectar Dispositivo'),
+              child: Text('Connect Device'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF3F6BF4),
                 textStyle: TextStyle(
@@ -334,7 +336,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                'Estado Bluetooth: ${_bluetoothState == BluetoothState.STATE_ON ? "Conectado" : "Desconectado"}',
+                'Bluetooth Status: ${_bluetoothState == BluetoothState.STATE_ON ? "Connected" : "Disconnected"}',
                 style: TextStyle(
                   color: Colors.white,
                   fontFamily: 'Open Sans',
@@ -398,15 +400,15 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('lib/assets/images/20.png')),
-              label: 'Limites',
+              label: 'Limits',
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
-              label: 'Notificaciones',
+              label: 'Notifications',
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('lib/assets/images/15.png')),
-              label: 'Perfil',
+              label: 'Profile',
             ),
           ],
           currentIndex: _selectedIndex,
@@ -421,7 +423,7 @@ class _PressureSensorScreenState extends State<PressureSensorScreen> {
 
   @override
   void dispose() {
-    _connection?.dispose(); // Asegura que la conexión se cierre correctamente
+    _connection?.dispose(); // Ensure the connection is closed properly
     super.dispose();
   }
 }
