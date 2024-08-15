@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sensor_app/alertas.dart';
+import 'package:sensor_app/config_screen.dart';
 import 'package:sensor_app/configuracion.dart';
 
 class SensorsScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class _SensorsScreenState extends State<SensorsScreen> {
 
   final List<Widget> _pages = [
     SensorsScreen(),
-    CalendarScreen(),
+    LimitsConfigScreen(),
     AlertsScreen(),
     GeneralSettingsScreen(),
   ];
@@ -31,14 +32,7 @@ class _SensorsScreenState extends State<SensorsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: Colors.black),
-          onPressed: () {},
-        ),
-      ),
+      backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -46,7 +40,7 @@ class _SensorsScreenState extends State<SensorsScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(height: 10),
+                SizedBox(height: 5),
                 Image.asset('lib/assets/images/21.png', height: 120),
                 SizedBox(height: 10),
                 Text(
@@ -58,7 +52,7 @@ class _SensorsScreenState extends State<SensorsScreen> {
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 30),
                 _buildSensorButton(
                   context,
                   'Sensor de Temperatura',
@@ -79,15 +73,9 @@ class _SensorsScreenState extends State<SensorsScreen> {
                 ),
                 _buildSensorButton(
                   context,
-                  'Sensor de Seguimiento',
+                  'Seguimiento',
                   'lib/assets/images/19.png',
                   '/tracking',
-                ),
-                _buildSensorButton(
-                  context,
-                  'Configuración de Límites',
-                  'lib/assets/images/20.png',
-                  '/config',
                   color: Colors.blue,
                 ),
               ],
@@ -116,8 +104,8 @@ class _SensorsScreenState extends State<SensorsScreen> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: ImageIcon(AssetImage('lib/assets/images/13.png')),
-              label: 'Calendario',
+              icon: ImageIcon(AssetImage('lib/assets/images/20.png')),
+              label: 'Limites',
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
@@ -147,32 +135,24 @@ class _SensorsScreenState extends State<SensorsScreen> {
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: ElevatedButton.icon(
-        icon: ImageIcon(AssetImage(iconPath), size: 32, color: Colors.white),
-        label: Text(title, style: TextStyle(fontSize: 18, color: Colors.white)),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
+      child: SizedBox(
+        width: double.infinity,
+        child :ElevatedButton.icon(
+          icon: ImageIcon(AssetImage(iconPath), size: 32, color: Colors.white),
+          label: Text(title, style: TextStyle(fontSize: 18, color: Colors.white)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: color,
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+            elevation: 5,
           ),
-          elevation: 5,
-        ),
-        onPressed: () {
-          Navigator.pushNamed(context, route);
-        },
+          onPressed: () {
+            Navigator.pushNamed(context, route);
+          },
+        )
       ),
-    );
-  }
-}
-
-// Define las pantallas a las que quieres navegar
-
-class CalendarScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Calendar Screen')),
     );
   }
 }

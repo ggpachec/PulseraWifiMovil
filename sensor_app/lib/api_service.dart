@@ -1,10 +1,14 @@
 import 'package:http/http.dart' as http;
+import 'package:sensor_app/auth_service.dart';
 import 'dart:convert';
+
 
 class ApiService {
   final String baseUrl = 'https://monitoreodoc.pythonanywhere.com/api/';
 
   Future<List<Map<String, dynamic>>> fetchAlerts() async {
+    final id = await AuthService.getPatient();
+
     final response = await http.get(
       Uri.parse('$baseUrl/alertas/'),
     );
@@ -18,7 +22,7 @@ class ApiService {
           'mensaje': data['mensaje'],
           'fechaCreacion': data['fechaCreacion'],
           'activa': data['activa'],
-          'idPaciente': data['idPaciente'],
+          'idPaciente': id,
           'tipoAlerta': data['tipoAlerta'],
         };
       }).toList();
@@ -68,12 +72,41 @@ class ApiService {
       throw Exception('Failed to delete data');
     }
   }
+  
+  
+  Future<Map<String, dynamic>> loginUser(String username, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/login/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['rol'] == 3) {
+        return {'rol': data['rol'],
+                'auth_token': data['auth_token']};
+      } else {
+        throw Exception('Rol no permitido');
+      }
+    } else {
+      throw Exception('Error al iniciar sesión');
+    }
+  }
+
 
   Future<void> registerUser(String username, String email, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/auth/users/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+      Uri.parse('$baseUrl/auth/register/'), // Cambia a la URL de registro si existe.
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
         'username': username,
         'email': email,
         'password': password,
@@ -82,24 +115,6 @@ class ApiService {
 
     if (response.statusCode != 201) {
       throw Exception('Error al registrar usuario');
-    }
-  }
-
-  Future<String> loginUser(String username, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/token/login/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'username': username,
-        'password': password,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['auth_token'];
-    } else {
-      throw Exception('Error al iniciar sesión');
     }
   }
 }

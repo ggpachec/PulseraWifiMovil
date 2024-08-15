@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sensor_app/alertas.dart';
+import 'package:sensor_app/auth_service.dart';
+import 'package:sensor_app/configuracion.dart';
+import 'package:sensor_app/sensors.dart';
 import 'api_service.dart';
 
 class LimitsConfigScreen extends StatefulWidget {
@@ -26,30 +30,31 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
   double heartRateValue = 80.0;
 
   Future<void> _saveLimits() async {
+    final id = await AuthService.getPatient();
     List<Map<String, dynamic>> limitsData = [
       {
         "umbral_minimo": minPressure,
         "umbral_maximo": maxPressure,
         "servicio": 1, // ID del servicio para presión
-        "paciente": 1 //esto se cambia dependiendo del paciente que hace login
+        "paciente": id['id'] //esto se cambia dependiendo del paciente que hace login
       },
       {
         "umbral_minimo": minSaturation,
         "umbral_maximo": maxSaturation,
         "servicio": 2, // ID del servicio para saturación
-        "paciente": 1 //esto se cambia dependiendo del paciente que hace login
+        "paciente": id['id'] //esto se cambia dependiendo del paciente que hace login
       },
       {
         "umbral_minimo": minTemperature,
         "umbral_maximo": maxTemperature,
         "servicio": 5, // ID del servicio para temperatura
-        "paciente": 1 //esto se cambia dependiendo del paciente que hace login
+        "paciente": id['id'] //esto se cambia dependiendo del paciente que hace login
       },
       {
         "umbral_minimo": minHeartRate,
         "umbral_maximo": maxHeartRate,
         "servicio": 4, // ID del servicio para frecuencia cardíaca
-        "paciente": 1 //esto se cambia dependiendo del paciente que hace login
+        "paciente": id['id'] //esto se cambia dependiendo del paciente que hace login
       },
     ];
 
@@ -69,6 +74,25 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
     }
   }
 
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    SensorsScreen(),
+    LimitsConfigScreen(),
+    AlertsScreen(),
+    GeneralSettingsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    // Navegar a la página seleccionada
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => _pages[index]),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,33 +185,37 @@ class _LimitsConfigScreenState extends State<LimitsConfigScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(0),
+            topRight: Radius.circular(0),
+          ),
         ),
         child: BottomNavigationBar(
           backgroundColor: Colors.transparent,
+          elevation: 0,
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: ImageIcon(AssetImage('lib/assets/images/12.png')),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today),
-              label: 'Calendario',
+              icon: ImageIcon(AssetImage('lib/assets/images/20.png')),
+              label: 'Limites',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.notifications),
+              icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
               label: 'Notificaciones',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon: ImageIcon(AssetImage('lib/assets/images/15.png')),
               label: 'Perfil',
             ),
           ],
-          currentIndex: 0,
+          currentIndex: _selectedIndex,
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.black,
-          onTap: (index) {
-            // handle navigation
-          },
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
         ),
       ),
     );

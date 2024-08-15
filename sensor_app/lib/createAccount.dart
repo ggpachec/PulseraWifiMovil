@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'api_service.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   @override
@@ -6,6 +7,8 @@ class CreateAccountScreen extends StatefulWidget {
 }
 
 class _CreateAccountScreenState extends State<CreateAccountScreen> {
+  final ApiService apiService = ApiService();  // Instancia de ApiService
+
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -58,26 +61,26 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   }
 
   void _register() {
-    // if (_formKey.currentState?.validate() ?? false) {
-    //   // Procesar el registro
-    //   Navigator.pushReplacementNamed(context, '/login');
-    // }
-
-    try {
-      await apiService.registerUser(
-        _usernameController.text,
-        _emailController.text,
-        _passwordController.text,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registro exitoso')),
-      );
+    if (_formKey.currentState?.validate() ?? false) {
+      // Procesar el registro
       Navigator.pushReplacementNamed(context, '/login');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al registrar: $e')),
-      );
     }
+
+    // try {
+    //   await apiService.registerUser(
+    //     _usernameController.text,
+    //     _emailController.text,
+    //     _passwordController.text,
+    //   );
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Registro exitoso')),
+    //   );
+    //   Navigator.pushReplacementNamed(context, '/login');
+    // } catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Error al registrar: $e')),
+    //   );
+    // }
   }
 
   @override

@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:sensor_app/alertas.dart';
+import 'package:sensor_app/auth_service.dart';
+import 'package:sensor_app/config_screen.dart';
 import 'package:sensor_app/configuracion.dart';
 import 'package:sensor_app/sensors.dart';
 import 'api_service.dart';
@@ -31,7 +33,7 @@ class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
 
   final List<Widget> _pages = [
     SensorsScreen(),
-    CalendarScreen(),
+    LimitsConfigScreen(),
     AlertsScreen(),
     GeneralSettingsScreen(),
   ];
@@ -143,11 +145,13 @@ class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
   }
 
   Future<void> _sendDataToApi(String data) async {
+    final id = await AuthService.getPatient();
     Map<String, dynamic> newData = {
-      'servicio': '6',  // Temperatura
-      'fecha': DateTime.now().toIso8601String().split('T').first,
-      'hora': DateTime.now().toIso8601String().split('T').last.split('.').first,
-      'medicion': data,
+      "fecha": DateTime.now().toIso8601String().split('T').first,
+      "hora": DateTime.now().toIso8601String().split('T').last.split('.').first,
+      "medicion": data,
+      "servicio": 2,    // Saturacion
+      "paciente": id['id']
     };
 
     try {
@@ -336,6 +340,46 @@ class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF3F6BF4), Color(0xFF1E90FF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(0),
+            topRight: Radius.circular(0),
+          ),
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          items: [
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/12.png')),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/20.png')),
+              label: 'Limites',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
+              label: 'Notificaciones',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/15.png')),
+              label: 'Perfil',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.black,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
+        ),
+      ),    
     );
   }
 
@@ -346,14 +390,4 @@ class _SaturationSensorScreenState extends State<SaturationSensorScreen> {
   }
 }
 
-// Define las pantallas a las que quieres navegar
-
-class CalendarScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Calendar Screen')),
-    );
-  }
-}
 

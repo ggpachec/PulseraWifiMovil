@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'api_service.dart';
+import 'auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -6,6 +8,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final ApiService apiService = ApiService();  // Instancia de ApiService
+  
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -51,15 +55,30 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        String token = await apiService.loginUser(
+        // Realizar el inicio de sesión usando ApiService
+        final response = await apiService.loginUser(
           _usernameController.text,
           _passwordController.text,
         );
-        await AuthService.saveToken(token); // Guardar el token
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Inicio de sesión exitoso')),
-        );
-        Navigator.pushReplacementNamed(context, '/sensors');
+
+        // Verificar el rol en la respuesta
+        if (response['rol'] == 3) {
+          // Guardar el token en AuthService
+          await AuthService.saveToken(response['auth_token']);
+          await AuthService.savePatient(response['id'],response['username'],response['email'],response['first_name'],response['last_name']);
+          
+
+          // Mostrar un mensaje de éxito y redirigir a la pantalla de sensores
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Inicio de sesión exitoso')),
+          );
+          Navigator.pushReplacementNamed(context, '/sensors');
+        } else {
+          // Mostrar mensaje de error si el rol no es 3
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Usuario no autorizado')),
+          );
+        }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al iniciar sesión: $e')),
@@ -67,6 +86,8 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
+
+
 
 
   @override

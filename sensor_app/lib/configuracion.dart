@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sensor_app/alertas.dart';
+import 'package:sensor_app/auth_service.dart';
+import 'package:sensor_app/config_screen.dart';
 import 'package:sensor_app/sensors.dart';
 
 class GeneralSettingsScreen extends StatefulWidget {
@@ -8,11 +10,15 @@ class GeneralSettingsScreen extends StatefulWidget {
 }
 
 class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
+  String _firstName = '';
+  String _lastName = '';
+  String _email = '';
+  String _username = '';
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
     SensorsScreen(), // Define tus pantallas aquí
-    CalendarScreen(),
+    LimitsConfigScreen(),
     AlertsScreen(),
     GeneralSettingsScreen(),
   ];
@@ -28,6 +34,23 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchPatientData();
+  }
+
+  Future<void> _fetchPatientData() async {
+    final patientData = await AuthService.getPatient();
+    
+    // Suponiendo que `patientData` es un mapa con las claves 'first_name', 'last_name', y 'email'
+    setState(() {
+      _firstName = patientData['first_name'] ?? '';
+      _lastName = patientData['last_name'] ?? '';
+      _email = patientData['email'] ?? '';
+      _username = patientData['username'] ?? '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,30 +123,45 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.blue,
-        items: [
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('lib/assets/images/12.png')),
-            label: 'Home',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF3F6BF4), Color(0xFF1E90FF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('lib/assets/images/13.png')),
-            label: 'Calendario',
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(0),
+            topRight: Radius.circular(0),
           ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
-            label: 'Notificaciones',
-          ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('lib/assets/images/15.png')),
-            label: 'Perfil',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF3F6BF4),
-        unselectedItemColor: Color(0XFF000000),
-        onTap: _onItemTapped,
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          items: [
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/12.png')),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/20.png')),
+              label: 'Limites',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
+              label: 'Notificaciones',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/15.png')),
+              label: 'Perfil',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.black,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
+        ),
       ),
     );
   }
@@ -144,16 +182,18 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
     );
   }
 
+
   Widget _buildProfileSection() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Nombre: Genesis Pacheco', style: TextStyle(fontSize: 16)),
+          Text('Nombre: $_firstName $_lastName', style: TextStyle(fontSize: 16)),
           SizedBox(height: 10),
-          Text('Email: genesis.pacheco@gmail.com',
-              style: TextStyle(fontSize: 16)),
+          Text('Username: $_username', style: TextStyle(fontSize: 16)),
+          SizedBox(height: 10),
+          Text('Email: $_email', style: TextStyle(fontSize: 16)),
         ],
       ),
     );
@@ -230,19 +270,10 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
         children: [
           Text('Versión: 1.0.0', style: TextStyle(fontSize: 16)),
           SizedBox(height: 10),
-          Text('Desarrollado por: Paula Peralta',
+          Text('Desarrollado por: Equipo Pulseras Wifi',
               style: TextStyle(fontSize: 18)),
         ],
       ),
-    );
-  }
-}
-
-class CalendarScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Calendar Screen')),
     );
   }
 }

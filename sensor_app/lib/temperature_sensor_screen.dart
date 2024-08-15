@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sensor_app/alertas.dart';
+import 'package:sensor_app/auth_service.dart';
+import 'package:sensor_app/config_screen.dart';
 import 'package:sensor_app/configuracion.dart';
 import 'package:sensor_app/sensors.dart';
 import 'api_service.dart';
@@ -34,7 +36,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
 
   final List<Widget> _pages = [
     SensorsScreen(),
-    CalendarScreen(),
+    LimitsConfigScreen(),
     AlertsScreen(),
     GeneralSettingsScreen(),
   ];
@@ -127,14 +129,25 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
       _devicesList.clear();
     });
 
-    _bluetooth.startDiscovery().listen((r) {
+    StreamSubscription<BluetoothDiscoveryResult>? subscription;
+    subscription = _bluetooth.startDiscovery().listen((r) {
       setState(() {
         final device = r.device;
         if (!_devicesList.any((d) => d.address == device.address)) {
           _devicesList.add(device);
         }
       });
-    }).onDone(() {
+
+      // Detener la búsqueda después de encontrar 3 dispositivos
+      if (_devicesList.length >= 3) {
+        subscription?.cancel();
+        setState(() {
+          _isDiscovering = false;
+        });
+      }
+    });
+
+    subscription.onDone(() {
       setState(() {
         _isDiscovering = false;
       });
@@ -168,11 +181,20 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
   }
 
   Future<void> _sendDataToApi(String data) async {
+    final id = await AuthService.getPatient();
     Map<String, dynamic> newData = {
+<<<<<<< Updated upstream
       'servicio': '5', // Temperatura
       'fecha': DateTime.now().toIso8601String().split('T').first,
       'hora': DateTime.now().toIso8601String().split('T').last.split('.').first,
       'medicion': data,
+=======
+      "fecha": DateTime.now().toIso8601String().split('T').first,
+      "hora": DateTime.now().toIso8601String().split('T').last.split('.').first,
+      "medicion": data,
+      "servicio": 5,    // Temperatura
+      "paciente": id['id']
+>>>>>>> Stashed changes
     };
 
     try {
@@ -218,7 +240,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
                 width: double.minPositive,
                 child: LimitedBox(
                   maxHeight: 200,
-                  child: _isDiscovering
+                  child: _isDiscovering && _devicesList.isEmpty
                       ? Center(child: CircularProgressIndicator())
                       : ListView.builder(
                           shrinkWrap: true,
@@ -250,6 +272,13 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
         );
       },
     );
+  }
+
+
+  void _startDiscoveryAndShowDialog() {
+    _devicesList.clear();  // Limpiar la lista de dispositivos antes de comenzar
+    _showDeviceDialog();   // Mostrar el diálogo primero
+    _startDiscovery();     // Iniciar la búsqueda de dispositivos
   }
 
   @override
@@ -306,11 +335,11 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  onPressed: _startDiscovery,
-                  child: Text('Actualizar Estado'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                ),
+                // ElevatedButton(
+                //   onPressed: _startDiscovery,
+                //   child: Text('Actualizar Estado'),
+                //   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                // ),
                 ElevatedButton(
                   onPressed: _closeConnection,
                   child: Text('Cerrar Conexión'),
@@ -320,7 +349,9 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
             ),
             SizedBox(height: 10),
             ElevatedButton(
-              onPressed: _showDeviceDialog,
+              onPressed: () {
+                _startDiscoveryAndShowDialog();  // Inicia la búsqueda y muestra el diálogo
+              },
               child: Text('Conectar Dispositivo'),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
             ),
@@ -361,6 +392,46 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF3F6BF4), Color(0xFF1E90FF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(0),
+            topRight: Radius.circular(0),
+          ),
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          items: [
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/12.png')),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/20.png')),
+              label: 'Limites',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
+              label: 'Notificaciones',
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('lib/assets/images/15.png')),
+              label: 'Perfil',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.black,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
+        ),
+      ),
     );
   }
 
@@ -371,6 +442,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
   }
 }
 
+<<<<<<< Updated upstream
 // Define las pantallas a las que quieres navegar
 
 class CalendarScreen extends StatelessWidget {
@@ -381,3 +453,6 @@ class CalendarScreen extends StatelessWidget {
     );
   }
 }
+=======
+
+>>>>>>> Stashed changes

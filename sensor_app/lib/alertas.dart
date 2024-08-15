@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sensor_app/config_screen.dart';
 import 'package:sensor_app/configuracion.dart';
 import 'package:sensor_app/sensors.dart';
 import 'api_service.dart';
@@ -44,7 +45,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
   final List<Widget> _pages = [
     SensorsScreen(),
-    CalendarScreen(),
+    LimitsConfigScreen(),
     AlertsScreen(),
     GeneralSettingsScreen(),
   ];
@@ -187,8 +188,8 @@ class _AlertsScreenState extends State<AlertsScreen> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: ImageIcon(AssetImage('lib/assets/images/13.png')),
-              label: 'Calendario',
+              icon: ImageIcon(AssetImage('lib/assets/images/20.png')),
+              label: 'Limites',
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(AssetImage('lib/assets/images/14.png')),
@@ -205,7 +206,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
           onTap: _onItemTapped,
           type: BottomNavigationBarType.fixed,
         ),
-      )
+      ),
     );
   }
 
@@ -262,14 +263,4 @@ class _AlertsScreenState extends State<AlertsScreen> {
   }
 }
 
-// Define las pantallas a las que quieres navegar
-
-class CalendarScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Calendar Screen')),
-    );
-  }
-}
 
