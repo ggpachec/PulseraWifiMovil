@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sensor_app/alertas.dart';
 import 'package:sensor_app/auth_service.dart';
 import 'package:sensor_app/config_screen.dart';
@@ -54,6 +55,7 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
   @override
   void initState() {
     super.initState();
+    _requestPermissions();
     _bluetooth.state.then((state) {
       setState(() {
         _bluetoothState = state;
@@ -77,6 +79,26 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
 
     if (_bluetoothState == BluetoothState.STATE_ON) {
       _startDiscovery();
+    }
+  }
+
+  Future<void> _requestPermissions() async {
+    // Solicita los permisos necesarios para Bluetooth
+    PermissionStatus bluetoothStatus = await Permission.bluetooth.request();
+    PermissionStatus bluetoothScanStatus =
+        await Permission.bluetoothScan.request();
+    PermissionStatus bluetoothConnectStatus =
+        await Permission.bluetoothConnect.request();
+
+    // Comprueba si se concedieron los permisos
+    if (bluetoothStatus.isGranted &&
+        bluetoothScanStatus.isGranted &&
+        bluetoothConnectStatus.isGranted) {
+      // Los permisos se concedieron, puedes proceder
+      print("Permisos de Bluetooth concedidos.");
+    } else {
+      // Los permisos no se concedieron, maneja el caso aquí
+      print("Permisos de Bluetooth no concedidos.");
     }
   }
 
@@ -137,7 +159,8 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
             _buffer = _buffer.substring(index + 1);
             if (line.isNotEmpty) {
               _dataList.add(line);
-              _sendDataToApi(line);
+              _sendDataToApi(
+                  double.parse(line.split(' ')[1])); // Send data to API
             }
           }
         });
@@ -147,14 +170,14 @@ class _TemperatureSensorScreenState extends State<TemperatureSensorScreen> {
     }
   }
 
-  Future<void> _sendDataToApi(String data) async {
+  Future<void> _sendDataToApi(double data) async {
     final id = await AuthService.getPatient();
     Map<String, dynamic> newData = {
       "fecha": DateTime.now().toIso8601String().split('T').first,
       "hora": DateTime.now().toIso8601String().split('T').last.split('.').first,
       "medicion": data,
-      "servicio": 1, // Presion
-      "paciente": id['id']
+      "servicio": 5, // Presion
+      "paciente": id['id']-1
     };
 
     try {

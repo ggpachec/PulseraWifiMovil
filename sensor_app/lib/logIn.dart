@@ -69,9 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
           
 
           // Mostrar un mensaje de éxito y redirigir a la pantalla de sensores
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Inicio de sesión exitoso')),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text('Inicio de sesión exitoso')),
+          // );
           Navigator.pushReplacementNamed(context, '/sensors');
         } else {
           // Mostrar mensaje de error si el rol no es 3
